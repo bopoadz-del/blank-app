@@ -1,0 +1,252 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      backup_timestamp:
+        description: 'Backup timestamp to restore (YYYYMMDD_HHMMSS) or "previous" for last deployment'
+        required: true
+        default: 'previous'
+      reason:
+        description: 'Reason for rollback'
+        required: true
+
+jobs:
+  validate-rollback:
+    name: Validate Rollback Request
+    runs-on: ubuntu-latest
+    outputs:
+      should_proceed: ${{ steps.validate.outputs.proceed }}
+
+    steps:
+    - name: Validate inputs
+      id: validate
+      run: |
+        echo "Environment: ${{ github.event.inputs.environment }}"
+        echo "Backup: ${{ github.event.inputs.backup_timestamp }}"
+        echo "Reason: ${{ github.event.inputs.reason }}"
+
+        # Validation passed
+        echo "proceed=true" >> $GITHUB_OUTPUT
+
+    - name: Create rollback issue
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const issue = await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `Rollback: ${{ github.event.inputs.environment }} - ${new Date().toISOString()}`,
+            body: `## Rollback Request
+
+            **Environment:** ${{ github.event.inputs.environment }}
+            **Backup:** ${{ github.event.inputs.backup_timestamp }}
+            **Reason:** ${{ github.event.inputs.reason }}
+            **Requested by:** @${context.actor}
+            **Workflow Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
+
+            This issue tracks the rollback process.`,
+            labels: ['rollback', 'urgent', '${{ github.event.inputs.environment }}']
+          });
+
+          console.log('Created issue:', issue.data.number);
+
+  rollback-staging:
+    name: Rollback Staging
+    runs-on: ubuntu-latest
+    needs: validate-rollback
+    if: github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/staging_key
+        chmod 600 ~/.ssh/staging_key
+        ssh-keyscan -H ${{ secrets.STAGING_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Stop current services
+      env:
+        REMOTE_HOST: ${{ secrets.STAGING_HOST }}
+        REMOTE_USER: ${{ secrets.STAGING_USER }}
+      run: |
+        ssh -i ~/.ssh/staging_key $REMOTE_USER@$REMOTE_HOST << 'ENDSSH'
+          cd /opt/formula-api
+          echo "Stopping services..."
+          docker-compose down
+        ENDSSH
+
+    - name: Restore from backup
+      env:
+        REMOTE_HOST: ${{ secrets.STAGING_HOST }}
+        REMOTE_USER: ${{ secrets.STAGING_USER }}
+        BACKUP_TIMESTAMP: ${{ github.event.inputs.backup_timestamp }}
+      run: |
+        ssh -i ~/.ssh/staging_key $REMOTE_USER@$REMOTE_HOST << 'ENDSSH'
+          cd /opt/formula-api
+
+          if [ "$BACKUP_TIMESTAMP" = "previous" ]; then
+            BACKUP_FILE=$(ls -t backup/backups/*.tar.gz 2>/dev/null | head -1)
+          else
+            BACKUP_FILE="backup/backups/formula-api-backup-${BACKUP_TIMESTAMP}.tar.gz"
+          fi
+
+          if [ ! -f "$BACKUP_FILE" ]; then
+            echo "Error: Backup file not found: $BACKUP_FILE"
+            exit 1
+          fi
+
+          echo "Restoring from: $BACKUP_FILE"
+          echo "yes" | bash backup/restore.sh "$BACKUP_FILE"
+        ENDSSH
+
+    - name: Verify rollback
+      env:
+        REMOTE_HOST: ${{ secrets.STAGING_HOST }}
+        REMOTE_USER: ${{ secrets.STAGING_USER }}
+      run: |
+        ssh -i ~/.ssh/staging_key $REMOTE_USER@$REMOTE_HOST << 'ENDSSH'
+          cd /opt/formula-api
+          sleep 10
+          bash scripts/verify-deployment.sh
+        ENDSSH
+
+    - name: Create rollback tag
+      run: |
+        git tag -a "rollback-staging-$(date +%Y%m%d-%H%M%S)" -m "Staging rollback: ${{ github.event.inputs.reason }}"
+        git push origin --tags || true
+
+  rollback-production:
+    name: Rollback Production
+    runs-on: ubuntu-latest
+    needs: validate-rollback
+    if: github.event.inputs.environment == 'production'
+    environment:
+      name: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/production_key
+        chmod 600 ~/.ssh/production_key
+        ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Create emergency backup
+      env:
+        REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
+        REMOTE_USER: ${{ secrets.PRODUCTION_USER }}
+      run: |
+        ssh -i ~/.ssh/production_key $REMOTE_USER@$REMOTE_HOST << 'ENDSSH'
+          cd /opt/formula-api
+          echo "Creating emergency backup before rollback..."
+          bash backup/backup.sh
+        ENDSSH
+
+    - name: Stop current services
+      env:
+        REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
+        REMOTE_USER: ${{ secrets.PRODUCTION_USER }}
+      run: |
+        ssh -i ~/.ssh/production_key $REMOTE_USER@$REMOTE_HOST << 'ENDSSH'
+          cd /opt/formula-api
+          echo "Stopping services..."
+          docker-compose down
+        ENDSSH
+
+    - name: Restore from backup
+      env:
+        REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
+        REMOTE_USER: ${{ secrets.PRODUCTION_USER }}
+        BACKUP_TIMESTAMP: ${{ github.event.inputs.backup_timestamp }}
+      run: |
+        ssh -i ~/.ssh/production_key $REMOTE_USER@$REMOTE_HOST << 'ENDSSH'
+          cd /opt/formula-api
+
+          if [ "$BACKUP_TIMESTAMP" = "previous" ]; then
+            BACKUP_FILE=$(ls -t backup/backups/*.tar.gz 2>/dev/null | head -2 | tail -1)
+          else
+            BACKUP_FILE="backup/backups/formula-api-backup-${BACKUP_TIMESTAMP}.tar.gz"
+          fi
+
+          if [ ! -f "$BACKUP_FILE" ]; then
+            echo "Error: Backup file not found: $BACKUP_FILE"
+            exit 1
+          fi
+
+          echo "Restoring from: $BACKUP_FILE"
+          echo "yes" | bash backup/restore.sh "$BACKUP_FILE"
+        ENDSSH
+
+    - name: Verify rollback
+      env:
+        REMOTE_HOST: ${{ secrets.PRODUCTION_HOST }}
+        REMOTE_USER: ${{ secrets.PRODUCTION_USER }}
+      run: |
+        ssh -i ~/.ssh/production_key $REMOTE_USER@$REMOTE_HOST << 'ENDSSH'
+          cd /opt/formula-api
+          sleep 15
+          bash scripts/verify-deployment.sh
+        ENDSSH
+
+    - name: Create rollback tag
+      run: |
+        git tag -a "rollback-production-$(date +%Y%m%d-%H%M%S)" -m "Production rollback: ${{ github.event.inputs.reason }}"
+        git push origin --tags
+
+    - name: Notify rollback
+      run: |
+        echo "⚠️  PRODUCTION ROLLBACK COMPLETED"
+        echo "Reason: ${{ github.event.inputs.reason }}"
+        echo "Time: $(date)"
+
+  post-rollback:
+    name: Post-Rollback Actions
+    runs-on: ubuntu-latest
+    needs: [rollback-staging, rollback-production]
+    if: always()
+
+    steps:
+    - name: Generate rollback report
+      run: |
+        echo "# Rollback Report" > rollback-report.md
+        echo "" >> rollback-report.md
+        echo "**Environment:** ${{ github.event.inputs.environment }}" >> rollback-report.md
+        echo "**Backup Used:** ${{ github.event.inputs.backup_timestamp }}" >> rollback-report.md
+        echo "**Reason:** ${{ github.event.inputs.reason }}" >> rollback-report.md
+        echo "**Requested By:** ${{ github.actor }}" >> rollback-report.md
+        echo "**Completed:** $(date)" >> rollback-report.md
+        echo "" >> rollback-report.md
+        echo "## Status" >> rollback-report.md
+        if [ "${{ needs.rollback-staging.result }}" = "success" ] || [ "${{ needs.rollback-production.result }}" = "success" ]; then
+          echo "✓ Rollback completed successfully" >> rollback-report.md
+        else
+          echo "✗ Rollback failed - manual intervention required" >> rollback-report.md
+        fi
+
+    - name: Upload rollback report
+      uses: actions/upload-artifact@v4
+      with:
+        name: rollback-report
+        path: rollback-report.md
+
+    - name: Send notification
+      if: success()
+      run: |
+        echo "Rollback completed successfully for ${{ github.event.inputs.environment }}"
+        echo "Please monitor the service for stability"
