@@ -1,0 +1,110 @@
+# Universal Unit Registry for The Reasoner AI Platform
+# Extends Pint's base units with domain-specific engineering units
+
+# ============== CONSTRUCTION & STRUCTURAL ==============
+MPa = megapascal
+kN = kilonewton  
+kNm = kilonewton * meter
+bag_cement = 50 * kilogram
+cubic_yard = yard**3 = yd3
+board_foot = foot * foot * inch = bd_ft
+
+# ============== ENERGY & THERMODYNAMICS ==============
+Btu = 1055.06 * joule = british_thermal_unit
+ton_refrigeration = 3.5168525 * kilowatt = TR
+therm = 100000 * Btu
+MMBtu = 1e6 * Btu
+kWh = kilowatt * hour
+MWh = megawatt * hour
+GWh = gigawatt * hour
+
+# ============== FINANCE ==============
+basis_point = 0.0001 = bp = bps
+percent = 0.01 = pct
+USD = [currency] = $ = dollar
+EUR = [currency] = €
+GBP = [currency] = £
+
+# ============== FLOW & HYDRAULICS ==============
+gpm = gallon / minute = gallon_per_minute
+cfm = foot**3 / minute = cubic_feet_per_minute
+lpm = liter / minute = liter_per_minute
+MGD = million_gallon / day
+
+# ============== PRESSURE ==============
+psi = pound_force / inch**2
+bar = 100000 * pascal
+atm = atmosphere = 101325 * pascal
+kPa = kilopascal
+
+# ============== AREA ==============  
+acre = 4046.86 * meter**2
+hectare = 10000 * meter**2 = ha
+
+# ============== VOLUME ==============
+gallon = 3.785411784 * liter = gal
+barrel = 42 * gallon = bbl
+cubic_meter = meter**3 = m3
+
+# ============== MASS ==============
+metric_ton = 1000 * kilogram = tonne = mt
+short_ton = 2000 * pound = ton_us
+long_ton = 2240 * pound = ton_uk
+
+# ============== SPEED ==============
+mph = mile / hour
+knot = nautical_mile / hour = kt
+fps = foot / second = feet_per_second
+
+# ============== MANUFACTURING ==============
+rpm = revolution / minute = revolutions_per_minute  
+cycles_per_minute = 1 / minute = cpm
+parts_per_million = 1e-6 = ppm
+parts_per_billion = 1e-9 = ppb
+
+# ============== ELECTRICAL ==============
+kVA = kilovolt * ampere
+MVA = megavolt * ampere
+Wh = watt * hour = watt_hour
+
+# ============== DATA & COMPUTING ==============
+byte = 8 * bit = B
+kilobyte = 1024 * byte = KB = kB
+megabyte = 1024 * kilobyte = MB
+gigabyte = 1024 * megabyte = GB
+terabyte = 1024 * gigabyte = TB
+
+# ============== TIME ==============
+work_hour = hour = wh
+work_day = 8 * hour = wd  
+work_week = 40 * hour = ww
+work_month = 160 * hour = wm
+work_year = 2000 * hour = wy
+
+# ============== DIMENSIONLESS RATIOS ==============
+@alias dimensionless = ratio = fraction
+@alias percent = percentage = %
+
+# ============== CUSTOM CONTEXTS ==============
+@context construction
+    MPa -> psi: value * 145.038
+    psi -> MPa: value / 145.038
+    m -> ft: value * 3.28084
+    ft -> m: value / 3.28084
+    kg -> lb: value * 2.20462
+    lb -> kg: value / 2.20462
+@end
+
+@context energy
+    Btu -> kWh: value / 3412.14
+    kWh -> Btu: value * 3412.14
+    therm -> MMBtu: value * 0.1
+    MMBtu -> therm: value * 10
+@end
+
+@context finance
+    USD -> EUR: value * 0.85  # Note: Use live rates in production
+    EUR -> USD: value / 0.85
+    USD -> GBP: value * 0.73
+    GBP -> USD: value / 0.73
+@end

@@ -1,0 +1,415 @@
+# Empirical Bounds for Formula Validation
+# Physical limits and reasonable ranges for different domains
+
+# Format:
+# domain:
+#   parameter_name:
+#     min: minimum_value
+#     max: maximum_value
+#     typical_min: typical_minimum
+#     typical_max: typical_maximum
+#     unit: unit_string
+
+# ================== STRUCTURAL ENGINEERING ==================
+structural_engineering:
+  compressive_strength:
+    min: 10
+    max: 200
+    typical_min: 20
+    typical_max: 100
+    unit: MPa
+    description: "Concrete/masonry compressive strength"
+  
+  tensile_strength:
+    min: 1
+    max: 50
+    typical_min: 2
+    typical_max: 10
+    unit: MPa
+    description: "Material tensile strength"
+  
+  elastic_modulus:
+    min: 1
+    max: 500
+    typical_min: 10
+    typical_max: 400
+    unit: GPa
+    description: "Material elastic modulus"
+  
+  beam_span:
+    min: 0.5
+    max: 100
+    typical_min: 2
+    typical_max: 30
+    unit: m
+    description: "Structural beam span length"
+  
+  deflection_ratio:
+    min: 0
+    max: 0.05
+    typical_min: 0.001
+    typical_max: 0.01
+    unit: dimensionless
+    description: "Deflection/span ratio (L/360 to L/180)"
+
+# ================== CONCRETE TECHNOLOGY ==================
+concrete_technology:
+  w_c_ratio:
+    min: 0.25
+    max: 0.80
+    typical_min: 0.35
+    typical_max: 0.60
+    unit: dimensionless
+    description: "Water-cement ratio"
+  
+  slump:
+    min: 0
+    max: 250
+    typical_min: 50
+    typical_max: 200
+    unit: mm
+    description: "Concrete slump"
+  
+  cement_content:
+    min: 200
+    max: 600
+    typical_min: 300
+    typical_max: 450
+    unit: kg/m^3
+    description: "Cement content in concrete mix"
+  
+  maturity:
+    min: 0
+    max: 50000
+    typical_min: 100
+    typical_max: 10000
+    unit: °C·hr
+    description: "Time-temperature maturity"
+  
+  curing_temperature:
+    min: -10
+    max: 60
+    typical_min: 15
+    typical_max: 35
+    unit: °C
+    description: "Curing temperature"
+
+# ================== THERMAL ANALYSIS ==================
+thermal_analysis:
+  temperature:
+    min: -273.15  # Absolute zero
+    max: 5000
+    typical_min: -50
+    typical_max: 500
+    unit: °C
+    description: "Temperature"
+  
+  thermal_conductivity:
+    min: 0.01
+    max: 500
+    typical_min: 0.1
+    typical_max: 50
+    unit: W/(m·K)
+    description: "Thermal conductivity"
+  
+  heat_transfer_rate:
+    min: 0
+    max: 1000000
+    typical_min: 10
+    typical_max: 100000
+    unit: W
+    description: "Heat transfer rate"
+  
+  thermal_expansion:
+    min: 0
+    max: 0.0001
+    typical_min: 1e-6
+    typical_max: 5e-5
+    unit: 1/°C
+    description: "Coefficient of thermal expansion"
+  
+  R_value:
+    min: 0.1
+    max: 10
+    typical_min: 1
+    typical_max: 6
+    unit: m^2·K/W
+    description: "Thermal resistance"
+
+# ================== FLUID DYNAMICS ==================
+fluid_dynamics:
+  reynolds_number:
+    min: 0.1
+    max: 10000000
+    typical_min: 1000
+    typical_max: 100000
+    unit: dimensionless
+    description: "Reynolds number"
+  
+  flow_velocity:
+    min: 0
+    max: 100
+    typical_min: 0.1
+    typical_max: 10
+    unit: m/s
+    description: "Fluid flow velocity"
+  
+  viscosity:
+    min: 0.0001
+    max: 100
+    typical_min: 0.001
+    typical_max: 1
+    unit: Pa·s
+    description: "Dynamic viscosity"
+  
+  density:
+    min: 0.1
+    max: 20000
+    typical_min: 800
+    typical_max: 2000
+    unit: kg/m^3
+    description: "Fluid density"
+  
+  pressure:
+    min: 0
+    max: 100000
+    typical_min: 100
+    typical_max: 10000
+    unit: kPa
+    description: "Pressure"
+
+# ================== FINANCIAL METRICS ==================
+financial_metrics:
+  discount_rate:
+    min: -0.1
+    max: 1.0
+    typical_min: 0.01
+    typical_max: 0.30
+    unit: dimensionless
+    description: "Discount/interest rate"
+  
+  return_rate:
+    min: -1.0
+    max: 5.0
+    typical_min: -0.5
+    typical_max: 0.5
+    unit: dimensionless
+    description: "Rate of return"
+  
+  volatility:
+    min: 0
+    max: 3.0
+    typical_min: 0.05
+    typical_max: 0.50
+    unit: dimensionless
+    description: "Volatility/standard deviation"
+  
+  sharpe_ratio:
+    min: -5
+    max: 10
+    typical_min: 0
+    typical_max: 3
+    unit: dimensionless
+    description: "Sharpe ratio"
+  
+  time_period:
+    min: 0.01
+    max: 100
+    typical_min: 1
+    typical_max: 30
+    unit: years
+    description: "Investment time period"
+
+# ================== ENERGY SYSTEMS ==================
+energy_systems:
+  power_output:
+    min: 0
+    max: 1000000
+    typical_min: 100
+    typical_max: 100000
+    unit: kW
+    description: "Power output"
+  
+  efficiency:
+    min: 0
+    max: 1.0
+    typical_min: 0.3
+    typical_max: 0.95
+    unit: dimensionless
+    description: "Energy conversion efficiency"
+  
+  voltage:
+    min: 0
+    max: 1000000
+    typical_min: 110
+    typical_max: 480000
+    unit: V
+    description: "Electrical voltage"
+  
+  current:
+    min: 0
+    max: 10000
+    typical_min: 1
+    typical_max: 1000
+    unit: A
+    description: "Electrical current"
+  
+  fuel_consumption:
+    min: 0
+    max: 10000
+    typical_min: 1
+    typical_max: 1000
+    unit: kg/hr
+    description: "Fuel consumption rate"
+
+# ================== GEOTECHNICAL ENGINEERING ==================
+geotechnical:
+  bearing_capacity:
+    min: 10
+    max: 5000
+    typical_min: 50
+    typical_max: 500
+    unit: kPa
+    description: "Soil bearing capacity"
+  
+  friction_angle:
+    min: 0
+    max: 50
+    typical_min: 25
+    typical_max: 40
+    unit: degrees
+    description: "Soil friction angle"
+  
+  cohesion:
+    min: 0
+    max: 200
+    typical_min: 0
+    typical_max: 50
+    unit: kPa
+    description: "Soil cohesion"
+  
+  settlement:
+    min: 0
+    max: 1.0
+    typical_min: 0.001
+    typical_max: 0.1
+    unit: m
+    description: "Foundation settlement"
+  
+  pile_capacity:
+    min: 10
+    max: 10000
+    typical_min: 100
+    typical_max: 2000
+    unit: kN
+    description: "Pile load capacity"
+
+# ================== MANUFACTURING ==================
+manufacturing:
+  production_rate:
+    min: 0.1
+    max: 10000
+    typical_min: 10
+    typical_max: 1000
+    unit: units/hr
+    description: "Production rate"
+  
+  cycle_time:
+    min: 0.1
+    max: 3600
+    typical_min: 10
+    typical_max: 300
+    unit: seconds
+    description: "Manufacturing cycle time"
+  
+  defect_rate:
+    min: 0
+    max: 0.5
+    typical_min: 0.0001
+    typical_max: 0.05
+    unit: dimensionless
+    description: "Defect rate (fraction)"
+  
+  material_cost:
+    min: 0.01
+    max: 1000000
+    typical_min: 1
+    typical_max: 10000
+    unit: USD/unit
+    description: "Material cost per unit"
+
+# ================== CHEMICAL ENGINEERING ==================
+chemical_engineering:
+  ph_value:
+    min: 0
+    max: 14
+    typical_min: 4
+    typical_max: 10
+    unit: dimensionless
+    description: "pH value"
+  
+  reaction_rate:
+    min: 0
+    max: 1000
+    typical_min: 0.01
+    typical_max: 10
+    unit: mol/(L·s)
+    description: "Chemical reaction rate"
+  
+  concentration:
+    min: 0
+    max: 10000
+    typical_min: 0.1
+    typical_max: 100
+    unit: mol/L
+    description: "Molar concentration"
+  
+  activation_energy:
+    min: 10
+    max: 500
+    typical_min: 40
+    typical_max: 200
+    unit: kJ/mol
+    description: "Activation energy"
+
+# ================== UNIVERSAL CONSTRAINTS ==================
+universal:
+  probability:
+    min: 0
+    max: 1.0
+    typical_min: 0
+    typical_max: 1.0
+    unit: dimensionless
+    description: "Probability value"
+  
+  percentage:
+    min: 0
+    max: 1.0
+    typical_min: 0
+    typical_max: 1.0
+    unit: dimensionless
+    description: "Percentage (as decimal)"
+  
+  ratio:
+    min: 0
+    max: 1000
+    typical_min: 0.01
+    typical_max: 100
+    unit: dimensionless
+    description: "Dimensionless ratio"
+  
+  time_duration:
+    min: 0
+    max: 1e12
+    typical_min: 1
+    typical_max: 1e10
+    unit: seconds
+    description: "Time duration"
+  
+  length:
+    min: 0
+    max: 1e12
+    typical_min: 0.001
+    typical_max: 1000
+    unit: m
+    description: "Length dimension"

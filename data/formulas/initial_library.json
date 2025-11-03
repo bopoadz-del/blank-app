@@ -1,0 +1,522 @@
+[
+  {
+    "formula_id": "concrete_compressive_strength_maturity",
+    "name": "Concrete Compressive Strength (Maturity Method)",
+    "description": "Calculate concrete strength based on time-temperature maturity",
+    "domain": "concrete_technology",
+    "formula_expression": "S_ultimate * (1 - exp(-k * maturity))",
+    "input_parameters": {
+      "S_ultimate": {"type": "float", "unit": "MPa", "description": "Ultimate compressive strength", "min_value": 20, "max_value": 100},
+      "k": {"type": "float", "unit": "1/°C·hr", "description": "Rate constant", "min_value": 0.001, "max_value": 0.01, "default": 0.005},
+      "maturity": {"type": "float", "unit": "°C·hr", "description": "Time-temperature maturity", "min_value": 0, "max_value": 10000}
+    },
+    "output_parameters": {
+      "strength": {"type": "float", "unit": "MPa", "description": "Compressive strength at given maturity", "min_value": 0, "max_value": 100}
+    },
+    "source": "ASTM_C1074",
+    "source_reference": "ASTM C1074-19 Standard Practice for Estimating Concrete Strength by the Maturity Method"
+  },
+  {
+    "formula_id": "beam_deflection_simply_supported",
+    "name": "Simply Supported Beam Deflection",
+    "description": "Maximum deflection of simply supported beam with uniform load",
+    "domain": "structural_engineering",
+    "formula_expression": "(5 * w * L**4) / (384 * E * I)",
+    "input_parameters": {
+      "w": {"type": "float", "unit": "kN/m", "description": "Uniform load", "min_value": 0.1, "max_value": 100},
+      "L": {"type": "float", "unit": "m", "description": "Span length", "min_value": 1, "max_value": 50},
+      "E": {"type": "float", "unit": "GPa", "description": "Elastic modulus", "min_value": 10, "max_value": 400},
+      "I": {"type": "float", "unit": "m^4", "description": "Moment of inertia", "min_value": 1e-6, "max_value": 1}
+    },
+    "output_parameters": {
+      "deflection": {"type": "float", "unit": "m", "description": "Maximum deflection", "min_value": 0, "max_value": 1}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Mechanics of Materials - Beer, Johnston"
+  },
+  {
+    "formula_id": "npv_net_present_value",
+    "name": "Net Present Value (NPV)",
+    "description": "Calculate NPV for investment cash flows",
+    "domain": "financial_metrics",
+    "formula_expression": "sum([cf / (1 + r)**t for t, cf in enumerate(cash_flows)])",
+    "input_parameters": {
+      "cash_flows": {"type": "array", "unit": "$", "description": "Array of cash flows", "required": true},
+      "r": {"type": "float", "unit": "%", "description": "Discount rate", "min_value": 0, "max_value": 1}
+    },
+    "output_parameters": {
+      "npv": {"type": "float", "unit": "$", "description": "Net present value"}
+    },
+    "source": "consultant_report",
+    "source_reference": "Corporate Finance - Ross, Westerfield, Jaffe"
+  },
+  {
+    "formula_id": "heat_transfer_conduction",
+    "name": "Heat Transfer by Conduction",
+    "description": "Fourier's law for steady-state heat conduction",
+    "domain": "thermal_analysis",
+    "formula_expression": "(k * A * (T_hot - T_cold)) / thickness",
+    "input_parameters": {
+      "k": {"type": "float", "unit": "W/(m·K)", "description": "Thermal conductivity", "min_value": 0.01, "max_value": 500},
+      "A": {"type": "float", "unit": "m^2", "description": "Cross-sectional area", "min_value": 0.01, "max_value": 100},
+      "T_hot": {"type": "float", "unit": "°C", "description": "Hot side temperature", "min_value": -50, "max_value": 500},
+      "T_cold": {"type": "float", "unit": "°C", "description": "Cold side temperature", "min_value": -50, "max_value": 500},
+      "thickness": {"type": "float", "unit": "m", "description": "Material thickness", "min_value": 0.001, "max_value": 5}
+    },
+    "output_parameters": {
+      "q": {"type": "float", "unit": "W", "description": "Heat transfer rate", "min_value": 0, "max_value": 1000000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Fundamentals of Heat and Mass Transfer - Incropera, DeWitt"
+  },
+  {
+    "formula_id": "column_buckling_euler",
+    "name": "Euler Column Buckling Load",
+    "description": "Critical buckling load for slender columns",
+    "domain": "structural_engineering",
+    "formula_expression": "(pi**2 * E * I) / (K * L)**2",
+    "input_parameters": {
+      "E": {"type": "float", "unit": "GPa", "description": "Elastic modulus", "min_value": 10, "max_value": 400},
+      "I": {"type": "float", "unit": "m^4", "description": "Moment of inertia", "min_value": 1e-6, "max_value": 1},
+      "L": {"type": "float", "unit": "m", "description": "Column length", "min_value": 1, "max_value": 50},
+      "K": {"type": "float", "unit": "dimensionless", "description": "Effective length factor", "min_value": 0.5, "max_value": 2, "default": 1.0}
+    },
+    "output_parameters": {
+      "P_cr": {"type": "float", "unit": "kN", "description": "Critical buckling load", "min_value": 0, "max_value": 100000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "AISC Steel Construction Manual"
+  },
+  {
+    "formula_id": "sharpe_ratio",
+    "name": "Sharpe Ratio",
+    "description": "Risk-adjusted return metric",
+    "domain": "financial_metrics",
+    "formula_expression": "(portfolio_return - risk_free_rate) / portfolio_std",
+    "input_parameters": {
+      "portfolio_return": {"type": "float", "unit": "%", "description": "Portfolio return", "min_value": -1, "max_value": 2},
+      "risk_free_rate": {"type": "float", "unit": "%", "description": "Risk-free rate", "min_value": 0, "max_value": 0.1, "default": 0.03},
+      "portfolio_std": {"type": "float", "unit": "%", "description": "Portfolio standard deviation", "min_value": 0.001, "max_value": 1}
+    },
+    "output_parameters": {
+      "sharpe": {"type": "float", "unit": "dimensionless", "description": "Sharpe ratio", "min_value": -10, "max_value": 10}
+    },
+    "source": "consultant_report",
+    "source_reference": "Portfolio Selection - Markowitz"
+  },
+  {
+    "formula_id": "concrete_tensile_strength",
+    "name": "Concrete Tensile Strength",
+    "description": "Estimate tensile strength from compressive strength",
+    "domain": "concrete_technology",
+    "formula_expression": "0.56 * sqrt(f_c)",
+    "input_parameters": {
+      "f_c": {"type": "float", "unit": "MPa", "description": "Compressive strength", "min_value": 20, "max_value": 100}
+    },
+    "output_parameters": {
+      "f_t": {"type": "float", "unit": "MPa", "description": "Tensile strength", "min_value": 0, "max_value": 10}
+    },
+    "source": "ACI_318",
+    "source_reference": "ACI 318-19 Building Code Requirements for Structural Concrete"
+  },
+  {
+    "formula_id": "fluid_reynolds_number",
+    "name": "Reynolds Number",
+    "description": "Dimensionless number characterizing fluid flow",
+    "domain": "fluid_dynamics",
+    "formula_expression": "(rho * v * D) / mu",
+    "input_parameters": {
+      "rho": {"type": "float", "unit": "kg/m^3", "description": "Fluid density", "min_value": 0.1, "max_value": 2000},
+      "v": {"type": "float", "unit": "m/s", "description": "Flow velocity", "min_value": 0.01, "max_value": 100},
+      "D": {"type": "float", "unit": "m", "description": "Characteristic length (pipe diameter)", "min_value": 0.001, "max_value": 5},
+      "mu": {"type": "float", "unit": "Pa·s", "description": "Dynamic viscosity", "min_value": 0.0001, "max_value": 1}
+    },
+    "output_parameters": {
+      "Re": {"type": "float", "unit": "dimensionless", "description": "Reynolds number", "min_value": 0, "max_value": 1000000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Fluid Mechanics - White"
+  },
+  {
+    "formula_id": "irr_approximation",
+    "name": "Internal Rate of Return (IRR) Approximation",
+    "description": "Approximate IRR for simple cash flows",
+    "domain": "financial_metrics",
+    "formula_expression": "(final_value / initial_investment)**(1/years) - 1",
+    "input_parameters": {
+      "initial_investment": {"type": "float", "unit": "$", "description": "Initial investment", "min_value": 1, "max_value": 1e12},
+      "final_value": {"type": "float", "unit": "$", "description": "Final value", "min_value": 0, "max_value": 1e12},
+      "years": {"type": "float", "unit": "years", "description": "Investment period", "min_value": 0.1, "max_value": 100}
+    },
+    "output_parameters": {
+      "irr": {"type": "float", "unit": "%", "description": "Internal rate of return", "min_value": -1, "max_value": 10}
+    },
+    "source": "consultant_report",
+    "source_reference": "Investment Analysis - Bodie, Kane, Marcus"
+  },
+  {
+    "formula_id": "thermal_expansion_linear",
+    "name": "Linear Thermal Expansion",
+    "description": "Calculate length change due to temperature",
+    "domain": "thermal_analysis",
+    "formula_expression": "L_0 * alpha * delta_T",
+    "input_parameters": {
+      "L_0": {"type": "float", "unit": "m", "description": "Original length", "min_value": 0.01, "max_value": 1000},
+      "alpha": {"type": "float", "unit": "1/°C", "description": "Coefficient of thermal expansion", "min_value": 1e-6, "max_value": 1e-4},
+      "delta_T": {"type": "float", "unit": "°C", "description": "Temperature change", "min_value": -200, "max_value": 500}
+    },
+    "output_parameters": {
+      "delta_L": {"type": "float", "unit": "m", "description": "Length change", "min_value": -10, "max_value": 10}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Engineering Materials - Ashby, Jones"
+  },
+  {
+    "formula_id": "cantilever_beam_deflection",
+    "name": "Cantilever Beam Deflection",
+    "description": "Maximum deflection of cantilever beam with point load at end",
+    "domain": "structural_engineering",
+    "formula_expression": "(P * L**3) / (3 * E * I)",
+    "input_parameters": {
+      "P": {"type": "float", "unit": "kN", "description": "Point load at end", "min_value": 0.1, "max_value": 100},
+      "L": {"type": "float", "unit": "m", "description": "Beam length", "min_value": 0.5, "max_value": 20},
+      "E": {"type": "float", "unit": "GPa", "description": "Elastic modulus", "min_value": 10, "max_value": 400},
+      "I": {"type": "float", "unit": "m^4", "description": "Moment of inertia", "min_value": 1e-6, "max_value": 0.1}
+    },
+    "output_parameters": {
+      "deflection": {"type": "float", "unit": "m", "description": "Deflection at free end", "min_value": 0, "max_value": 0.5}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Mechanics of Materials - Beer, Johnston"
+  },
+  {
+    "formula_id": "beam_bending_stress",
+    "name": "Beam Bending Stress",
+    "description": "Maximum bending stress in beam",
+    "domain": "structural_engineering",
+    "formula_expression": "(M * c) / I",
+    "input_parameters": {
+      "M": {"type": "float", "unit": "kNm", "description": "Bending moment", "min_value": 0.1, "max_value": 1000},
+      "c": {"type": "float", "unit": "m", "description": "Distance from neutral axis", "min_value": 0.01, "max_value": 1},
+      "I": {"type": "float", "unit": "m^4", "description": "Moment of inertia", "min_value": 1e-6, "max_value": 1}
+    },
+    "output_parameters": {
+      "sigma": {"type": "float", "unit": "MPa", "description": "Bending stress", "min_value": 0, "max_value": 500}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Strength of Materials - Timoshenko"
+  },
+  {
+    "formula_id": "shear_stress_beam",
+    "name": "Shear Stress in Beam",
+    "description": "Maximum shear stress in rectangular beam",
+    "domain": "structural_engineering",
+    "formula_expression": "(1.5 * V) / (b * h)",
+    "input_parameters": {
+      "V": {"type": "float", "unit": "kN", "description": "Shear force", "min_value": 0.1, "max_value": 1000},
+      "b": {"type": "float", "unit": "m", "description": "Beam width", "min_value": 0.05, "max_value": 2},
+      "h": {"type": "float", "unit": "m", "description": "Beam height", "min_value": 0.1, "max_value": 3}
+    },
+    "output_parameters": {
+      "tau": {"type": "float", "unit": "MPa", "description": "Shear stress", "min_value": 0, "max_value": 100}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Mechanics of Materials - Gere, Goodno"
+  },
+  {
+    "formula_id": "plate_deflection_uniform",
+    "name": "Plate Deflection Under Uniform Load",
+    "description": "Maximum deflection of simply supported rectangular plate",
+    "domain": "structural_engineering",
+    "formula_expression": "(0.0138 * q * a**4) / (E * h**3)",
+    "input_parameters": {
+      "q": {"type": "float", "unit": "kPa", "description": "Uniform load", "min_value": 0.1, "max_value": 50},
+      "a": {"type": "float", "unit": "m", "description": "Shorter side length", "min_value": 0.5, "max_value": 10},
+      "E": {"type": "float", "unit": "GPa", "description": "Elastic modulus", "min_value": 50, "max_value": 400},
+      "h": {"type": "float", "unit": "m", "description": "Plate thickness", "min_value": 0.005, "max_value": 0.1}
+    },
+    "output_parameters": {
+      "deflection": {"type": "float", "unit": "m", "description": "Maximum deflection", "min_value": 0, "max_value": 0.1}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Theory of Plates and Shells - Timoshenko"
+  },
+  {
+    "formula_id": "concrete_modulus_elasticity",
+    "name": "Concrete Modulus of Elasticity",
+    "description": "Estimate elastic modulus from compressive strength",
+    "domain": "concrete_technology",
+    "formula_expression": "4700 * sqrt(f_c)",
+    "input_parameters": {
+      "f_c": {"type": "float", "unit": "MPa", "description": "Compressive strength", "min_value": 20, "max_value": 100}
+    },
+    "output_parameters": {
+      "E_c": {"type": "float", "unit": "MPa", "description": "Elastic modulus", "min_value": 15000, "max_value": 50000}
+    },
+    "source": "ACI_318",
+    "source_reference": "ACI 318-19 Building Code Requirements for Structural Concrete"
+  },
+  {
+    "formula_id": "concrete_slump_flow",
+    "name": "Concrete Slump Flow Prediction",
+    "description": "Predict slump flow from mix parameters",
+    "domain": "concrete_technology",
+    "formula_expression": "slump_base * (w_c_ratio**1.2) * (1 + 0.1 * SP_dosage)",
+    "input_parameters": {
+      "slump_base": {"type": "float", "unit": "mm", "description": "Base slump", "min_value": 50, "max_value": 150, "default": 100},
+      "w_c_ratio": {"type": "float", "unit": "dimensionless", "description": "Water-cement ratio", "min_value": 0.3, "max_value": 0.7},
+      "SP_dosage": {"type": "float", "unit": "%", "description": "Superplasticizer dosage", "min_value": 0, "max_value": 2}
+    },
+    "output_parameters": {
+      "slump_flow": {"type": "float", "unit": "mm", "description": "Predicted slump flow", "min_value": 50, "max_value": 800}
+    },
+    "source": "empirical",
+    "source_reference": "Concrete Mix Design - Mehta, Monteiro"
+  },
+  {
+    "formula_id": "capm_expected_return",
+    "name": "CAPM Expected Return",
+    "description": "Capital Asset Pricing Model expected return",
+    "domain": "financial_metrics",
+    "formula_expression": "risk_free_rate + beta * (market_return - risk_free_rate)",
+    "input_parameters": {
+      "risk_free_rate": {"type": "float", "unit": "%", "description": "Risk-free rate", "min_value": 0, "max_value": 0.1},
+      "beta": {"type": "float", "unit": "dimensionless", "description": "Beta coefficient", "min_value": -2, "max_value": 3},
+      "market_return": {"type": "float", "unit": "%", "description": "Expected market return", "min_value": 0, "max_value": 0.3}
+    },
+    "output_parameters": {
+      "expected_return": {"type": "float", "unit": "%", "description": "Expected return", "min_value": -0.5, "max_value": 1}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Capital Asset Pricing Model - Sharpe"
+  },
+  {
+    "formula_id": "cagr_compound_growth",
+    "name": "Compound Annual Growth Rate (CAGR)",
+    "description": "Calculate annualized growth rate",
+    "domain": "financial_metrics",
+    "formula_expression": "((ending_value / beginning_value)**(1/years)) - 1",
+    "input_parameters": {
+      "beginning_value": {"type": "float", "unit": "$", "description": "Beginning value", "min_value": 1, "max_value": 1e12},
+      "ending_value": {"type": "float", "unit": "$", "description": "Ending value", "min_value": 1, "max_value": 1e12},
+      "years": {"type": "float", "unit": "years", "description": "Time period", "min_value": 1, "max_value": 100}
+    },
+    "output_parameters": {
+      "cagr": {"type": "float", "unit": "%", "description": "Compound annual growth rate", "min_value": -0.5, "max_value": 2}
+    },
+    "source": "consultant_report",
+    "source_reference": "Investment Analysis - Damodaran"
+  },
+  {
+    "formula_id": "heat_convection",
+    "name": "Heat Transfer by Convection",
+    "description": "Newton's law of cooling for convective heat transfer",
+    "domain": "thermal_analysis",
+    "formula_expression": "h * A * (T_surface - T_fluid)",
+    "input_parameters": {
+      "h": {"type": "float", "unit": "W/(m^2·K)", "description": "Convection coefficient", "min_value": 5, "max_value": 500},
+      "A": {"type": "float", "unit": "m^2", "description": "Surface area", "min_value": 0.01, "max_value": 100},
+      "T_surface": {"type": "float", "unit": "°C", "description": "Surface temperature", "min_value": -50, "max_value": 500},
+      "T_fluid": {"type": "float", "unit": "°C", "description": "Fluid temperature", "min_value": -50, "max_value": 500}
+    },
+    "output_parameters": {
+      "q": {"type": "float", "unit": "W", "description": "Heat transfer rate", "min_value": 0, "max_value": 100000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Heat Transfer - Holman"
+  },
+  {
+    "formula_id": "thermal_resistance_wall",
+    "name": "Thermal Resistance (R-value)",
+    "description": "Calculate R-value for building insulation",
+    "domain": "thermal_analysis",
+    "formula_expression": "thickness / k",
+    "input_parameters": {
+      "thickness": {"type": "float", "unit": "m", "description": "Material thickness", "min_value": 0.01, "max_value": 1},
+      "k": {"type": "float", "unit": "W/(m·K)", "description": "Thermal conductivity", "min_value": 0.02, "max_value": 2}
+    },
+    "output_parameters": {
+      "R_value": {"type": "float", "unit": "m^2·K/W", "description": "Thermal resistance", "min_value": 0.01, "max_value": 50}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Building Thermal Insulation - ASHRAE"
+  },
+  {
+    "formula_id": "darcy_weisbach_pressure_drop",
+    "name": "Darcy-Weisbach Pressure Drop",
+    "description": "Pressure drop in pipe due to friction",
+    "domain": "fluid_dynamics",
+    "formula_expression": "f * (L / D) * (rho * v**2 / 2)",
+    "input_parameters": {
+      "f": {"type": "float", "unit": "dimensionless", "description": "Friction factor", "min_value": 0.01, "max_value": 0.1},
+      "L": {"type": "float", "unit": "m", "description": "Pipe length", "min_value": 1, "max_value": 1000},
+      "D": {"type": "float", "unit": "m", "description": "Pipe diameter", "min_value": 0.01, "max_value": 2},
+      "rho": {"type": "float", "unit": "kg/m^3", "description": "Fluid density", "min_value": 500, "max_value": 1500},
+      "v": {"type": "float", "unit": "m/s", "description": "Flow velocity", "min_value": 0.1, "max_value": 10}
+    },
+    "output_parameters": {
+      "dP": {"type": "float", "unit": "Pa", "description": "Pressure drop", "min_value": 0, "max_value": 1000000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Fluid Mechanics - White"
+  },
+  {
+    "formula_id": "bernoulli_equation",
+    "name": "Bernoulli's Equation",
+    "description": "Energy conservation for fluid flow",
+    "domain": "fluid_dynamics",
+    "formula_expression": "P1 + 0.5 * rho * v1**2 + rho * g * z1",
+    "input_parameters": {
+      "P1": {"type": "float", "unit": "Pa", "description": "Pressure at point 1", "min_value": 0, "max_value": 1000000},
+      "rho": {"type": "float", "unit": "kg/m^3", "description": "Fluid density", "min_value": 500, "max_value": 1500},
+      "v1": {"type": "float", "unit": "m/s", "description": "Velocity at point 1", "min_value": 0, "max_value": 50},
+      "g": {"type": "float", "unit": "m/s^2", "description": "Gravitational acceleration", "min_value": 9.8, "max_value": 9.82, "default": 9.81},
+      "z1": {"type": "float", "unit": "m", "description": "Elevation at point 1", "min_value": 0, "max_value": 100}
+    },
+    "output_parameters": {
+      "total_head": {"type": "float", "unit": "Pa", "description": "Total head at point 1", "min_value": 0, "max_value": 2000000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Fluid Mechanics - Cengel, Cimbala"
+  },
+  {
+    "formula_id": "electrical_power_ohms_law",
+    "name": "Electrical Power (Ohm's Law)",
+    "description": "Calculate electrical power from voltage and current",
+    "domain": "energy_systems",
+    "formula_expression": "V * I",
+    "input_parameters": {
+      "V": {"type": "float", "unit": "V", "description": "Voltage", "min_value": 0, "max_value": 10000},
+      "I": {"type": "float", "unit": "A", "description": "Current", "min_value": 0, "max_value": 1000}
+    },
+    "output_parameters": {
+      "P": {"type": "float", "unit": "W", "description": "Electrical power", "min_value": 0, "max_value": 1000000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Basic Electrical Engineering - Hughes"
+  },
+  {
+    "formula_id": "three_phase_power",
+    "name": "Three-Phase Electrical Power",
+    "description": "Calculate three-phase power",
+    "domain": "energy_systems",
+    "formula_expression": "sqrt(3) * V_line * I_line * PF",
+    "input_parameters": {
+      "V_line": {"type": "float", "unit": "V", "description": "Line voltage", "min_value": 100, "max_value": 50000},
+      "I_line": {"type": "float", "unit": "A", "description": "Line current", "min_value": 1, "max_value": 5000},
+      "PF": {"type": "float", "unit": "dimensionless", "description": "Power factor", "min_value": 0.5, "max_value": 1, "default": 0.9}
+    },
+    "output_parameters": {
+      "P_3phase": {"type": "float", "unit": "W", "description": "Three-phase power", "min_value": 0, "max_value": 10000000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Electrical Power Systems - Grainger, Stevenson"
+  },
+  {
+    "formula_id": "energy_consumption",
+    "name": "Energy Consumption",
+    "description": "Calculate energy consumption over time",
+    "domain": "energy_systems",
+    "formula_expression": "P * t",
+    "input_parameters": {
+      "P": {"type": "float", "unit": "kW", "description": "Power rating", "min_value": 0.1, "max_value": 10000},
+      "t": {"type": "float", "unit": "hr", "description": "Operating time", "min_value": 0.1, "max_value": 10000}
+    },
+    "output_parameters": {
+      "E": {"type": "float", "unit": "kWh", "description": "Energy consumed", "min_value": 0, "max_value": 100000000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Energy Management - Thumann, Mehta"
+  },
+  {
+    "formula_id": "bearing_capacity_terzaghi",
+    "name": "Bearing Capacity (Terzaghi)",
+    "description": "Ultimate bearing capacity of shallow foundation",
+    "domain": "geotechnical",
+    "formula_expression": "c * N_c + gamma * D * N_q + 0.5 * gamma * B * N_gamma",
+    "input_parameters": {
+      "c": {"type": "float", "unit": "kPa", "description": "Soil cohesion", "min_value": 0, "max_value": 200},
+      "N_c": {"type": "float", "unit": "dimensionless", "description": "Cohesion factor", "min_value": 5, "max_value": 100, "default": 30},
+      "gamma": {"type": "float", "unit": "kN/m^3", "description": "Soil unit weight", "min_value": 15, "max_value": 25},
+      "D": {"type": "float", "unit": "m", "description": "Foundation depth", "min_value": 0.5, "max_value": 5},
+      "N_q": {"type": "float", "unit": "dimensionless", "description": "Surcharge factor", "min_value": 1, "max_value": 50, "default": 20},
+      "B": {"type": "float", "unit": "m", "description": "Foundation width", "min_value": 0.5, "max_value": 10},
+      "N_gamma": {"type": "float", "unit": "dimensionless", "description": "Weight factor", "min_value": 0, "max_value": 40, "default": 15}
+    },
+    "output_parameters": {
+      "q_ult": {"type": "float", "unit": "kPa", "description": "Ultimate bearing capacity", "min_value": 0, "max_value": 5000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Foundation Design - Terzaghi, Peck, Mesri"
+  },
+  {
+    "formula_id": "settlement_consolidation",
+    "name": "Settlement by Consolidation",
+    "description": "Primary consolidation settlement",
+    "domain": "geotechnical",
+    "formula_expression": "(C_c * H * log10((P0 + delta_P) / P0)) / (1 + e0)",
+    "input_parameters": {
+      "C_c": {"type": "float", "unit": "dimensionless", "description": "Compression index", "min_value": 0.1, "max_value": 2},
+      "H": {"type": "float", "unit": "m", "description": "Layer thickness", "min_value": 1, "max_value": 50},
+      "P0": {"type": "float", "unit": "kPa", "description": "Initial effective stress", "min_value": 10, "max_value": 500},
+      "delta_P": {"type": "float", "unit": "kPa", "description": "Stress increase", "min_value": 10, "max_value": 500},
+      "e0": {"type": "float", "unit": "dimensionless", "description": "Initial void ratio", "min_value": 0.3, "max_value": 2}
+    },
+    "output_parameters": {
+      "settlement": {"type": "float", "unit": "m", "description": "Consolidation settlement", "min_value": 0, "max_value": 1}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Soil Mechanics - Lambe, Whitman"
+  },
+  {
+    "formula_id": "pile_capacity",
+    "name": "Pile Bearing Capacity",
+    "description": "Ultimate capacity of driven pile",
+    "domain": "geotechnical",
+    "formula_expression": "q_tip * A_tip + sum([f_i * A_shaft_i for i in range(len(f_list))])",
+    "input_parameters": {
+      "q_tip": {"type": "float", "unit": "kPa", "description": "Tip resistance", "min_value": 100, "max_value": 10000},
+      "A_tip": {"type": "float", "unit": "m^2", "description": "Tip area", "min_value": 0.01, "max_value": 1},
+      "f_avg": {"type": "float", "unit": "kPa", "description": "Average skin friction", "min_value": 10, "max_value": 150},
+      "A_shaft": {"type": "float", "unit": "m^2", "description": "Shaft area", "min_value": 1, "max_value": 100}
+    },
+    "output_parameters": {
+      "Q_ult": {"type": "float", "unit": "kN", "description": "Ultimate pile capacity", "min_value": 0, "max_value": 10000}
+    },
+    "source": "ISO_standard",
+    "source_reference": "Pile Foundation Design - Poulos, Davis"
+  },
+  {
+    "formula_id": "oee_equipment_effectiveness",
+    "name": "Overall Equipment Effectiveness (OEE)",
+    "description": "Manufacturing equipment performance metric",
+    "domain": "manufacturing",
+    "formula_expression": "availability * performance * quality",
+    "input_parameters": {
+      "availability": {"type": "float", "unit": "dimensionless", "description": "Equipment availability", "min_value": 0, "max_value": 1},
+      "performance": {"type": "float", "unit": "dimensionless", "description": "Performance rate", "min_value": 0, "max_value": 1},
+      "quality": {"type": "float", "unit": "dimensionless", "description": "Quality rate", "min_value": 0, "max_value": 1}
+    },
+    "output_parameters": {
+      "OEE": {"type": "float", "unit": "dimensionless", "description": "Overall equipment effectiveness", "min_value": 0, "max_value": 1}
+    },
+    "source": "ISO_standard",
+    "source_reference": "TPM - Nakajima"
+  },
+  {
+    "formula_id": "takt_time",
+    "name": "Takt Time",
+    "description": "Available production time per unit",
+    "domain": "manufacturing",
+    "formula_expression": "available_time / customer_demand",
+    "input_parameters": {
+      "available_time": {"type": "float", "unit": "seconds", "description": "Available production time", "min_value": 1, "max_value": 86400},
+      "customer_demand": {"type": "float", "unit": "units", "description": "Customer demand", "min_value": 1, "max_value": 10000}
+    },
+    "output_parameters": {
+      "takt_time": {"type": "float", "unit": "seconds/unit", "description": "Takt time", "min_value": 0.1, "max_value": 10000}
+    },
+    "source": "consultant_report",
+    "source_reference": "Lean Manufacturing - Womack, Jones"
+  }
+]
