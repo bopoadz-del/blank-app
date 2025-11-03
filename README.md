@@ -1,178 +1,245 @@
-# 🎈 Streamlit Production Template
+# 🚀 Formula Execution API
 
-A comprehensive, production-ready Streamlit application template with best practices, testing, CI/CD, and Docker support.
+A production-ready FastAPI backend for executing engineering formulas with API key authentication, rate limiting, and Docker support.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
-[![CI](https://github.com/yourusername/blank-app/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/blank-app/actions)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115.5-009688.svg)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📋 Table of Contents
 
 - [Features](#-features)
 - [Quick Start](#-quick-start)
+- [Available Formulas](#-available-formulas)
+- [API Endpoints](#-api-endpoints)
 - [Installation](#-installation)
-- [Usage](#-usage)
-- [Docker](#-docker)
-- [Testing](#-testing)
-- [Development](#-development)
-- [Project Structure](#-project-structure)
+- [Docker Deployment](#-docker-deployment)
 - [Configuration](#-configuration)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
+- [Testing](#-testing)
+- [Rate Limiting](#-rate-limiting)
+- [Project Structure](#-project-structure)
+- [Development](#-development)
 - [License](#-license)
 
 ## ✨ Features
 
-- 🎯 **Production-Ready**: Configured for production deployment
-- 🐳 **Docker Support**: Full containerization with Docker and Docker Compose
-- ✅ **Testing**: Comprehensive test suite with pytest
-- 🔄 **CI/CD**: Automated testing and deployment with GitHub Actions
-- 📊 **Data Explorer**: Upload and analyze CSV files
-- 📈 **Visualizations**: Interactive charts and graphs
-- ⚙️ **Configuration**: Environment-based configuration with `.env` support
-- 📝 **Documentation**: Well-documented code and comprehensive README
-- 🎨 **Custom Theme**: Streamlit configuration with custom styling
-- 🛠️ **Makefile**: Common tasks automated with make commands
+- 🔐 **API Key Authentication**: Secure access with X-API-Key header
+- ⏱️ **Rate Limiting**: Redis-based distributed rate limiting (10 requests/minute)
+- 🧮 **Engineering Formulas**: 8+ pre-built formulas for structural and fluid mechanics
+- 🐳 **Docker Support**: Complete containerization with Docker Compose
+- 📊 **PostgreSQL Database**: Ready for formula storage and history
+- ⚡ **Redis Cache**: High-performance rate limiting and caching
+- ✅ **Comprehensive Testing**: Full test suite with pytest
+- 📚 **Auto-generated Docs**: Interactive API docs with Swagger UI
+- 🔄 **CI/CD Ready**: GitHub Actions workflow included
 
 ## 🚀 Quick Start
 
-### Option 1: Local Installation
+### Option 1: Docker (Recommended)
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/blank-app.git
-cd blank-app
+# 1. Build containers
+docker-compose build
 
-# Install dependencies
-make install
+# 2. Start services
+docker-compose up -d
 
-# Run the app
-make run
+# 3. Check health
+curl http://localhost:8000/health
+
+# 4. View API documentation
+open http://localhost:8000/docs
 ```
 
-### Option 2: Docker
-
-```bash
-# Build and run with Docker Compose
-make docker-build
-make docker-run
-
-# View at http://localhost:8501
-```
-
-### Option 3: Direct Run
+### Option 2: Local Development
 
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the app
-streamlit run streamlit_app.py
+# Start Redis (required)
+docker run -d -p 6379:6379 redis:7-alpine
+
+# Run the API
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+## 🧮 Available Formulas
+
+### Structural Engineering
+
+1. **beam_deflection_simply_supported** - Simply supported beam deflection
+2. **beam_deflection_cantilever** - Cantilever beam deflection
+3. **beam_stress** - Bending stress calculation
+4. **column_buckling** - Euler column buckling load
+
+### Mechanical Engineering
+
+5. **pressure_vessel_stress** - Thin-walled pressure vessel stress
+6. **spring_deflection** - Helical spring deflection
+
+### Fluid Mechanics
+
+7. **reynolds_number** - Reynolds number calculation
+8. **flow_velocity** - Flow velocity from volumetric flow rate
+
+## 📡 API Endpoints
+
+### Public Endpoints
+
+- `GET /` - API information
+- `GET /health` - Health check (no auth required)
+- `GET /docs` - Interactive API documentation (Swagger UI)
+
+### Protected Endpoints (Require API Key)
+
+- `POST /api/v1/formulas/execute` - Execute a formula
+- `GET /api/v1/formulas/list` - List all available formulas
+- `GET /api/v1/formulas/{formula_id}` - Get formula information
 
 ## 📦 Installation
 
 ### Prerequisites
 
-- Python 3.9, 3.10, or 3.11
-- pip (Python package manager)
-- Docker (optional, for containerization)
+- Python 3.11+
+- Docker & Docker Compose (for containerized deployment)
+- Redis (for rate limiting)
 
-### Step-by-Step Installation
+### Step-by-Step Setup
 
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/blank-app.git
-cd blank-app
+git clone https://github.com/yourusername/formula-api.git
+cd formula-api
 ```
 
-2. **Create a virtual environment** (recommended)
+2. **Set up environment variables**
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+cp .env.example .env
+# Edit .env and set your API_KEY and SECRET_KEY
 ```
 
 3. **Install dependencies**
 
 ```bash
+make install
+# or
 pip install -r requirements.txt
 ```
 
-4. **Set up environment variables**
+4. **Run with Docker**
 
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+make docker-build
+make docker-run
 ```
 
-5. **Run the application**
+The API will be available at `http://localhost:8000`
+
+## 🐳 Docker Deployment
+
+### Build and Run
 
 ```bash
-streamlit run streamlit_app.py
-```
-
-The app will be available at `http://localhost:8501`
-
-## 🎯 Usage
-
-### Application Sections
-
-The app includes four main sections accessible from the sidebar:
-
-1. **Home**: Overview with metrics and quick start guide
-2. **Data Explorer**: Upload and analyze CSV files
-3. **Visualizations**: Interactive charts and maps
-4. **About**: Information about the app and tech stack
-
-### Example: Data Explorer
-
-1. Navigate to the "Data Explorer" section
-2. Upload a CSV file or view the sample data
-3. Explore the data preview, statistics, and information
-4. Download or analyze your data
-
-### Example: Visualizations
-
-1. Navigate to the "Visualizations" section
-2. View interactive line charts, area charts, and maps
-3. Customize the visualizations as needed
-
-## 🐳 Docker
-
-### Using Docker Compose (Recommended)
-
-```bash
-# Build the image
+# Build containers
 docker-compose build
 
-# Run the container
+# Start services
 docker-compose up -d
 
-# View logs
-docker-compose logs -f
+# Check status
+docker-compose ps
 
-# Stop the container
+# View logs
+docker-compose logs -f backend
+
+# Stop services
 docker-compose down
 ```
 
-### Using Docker CLI
+### Services
+
+The Docker Compose stack includes:
+
+- **backend**: FastAPI application (port 8000)
+- **db**: PostgreSQL 16 database (port 5432)
+- **redis**: Redis 7 for rate limiting (port 6379)
+
+## 📝 API Usage Examples
+
+### Execute a Formula
 
 ```bash
-# Build the image
-docker build -t streamlit-app .
+curl -X POST http://localhost:8000/api/v1/formulas/execute \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "formula_id": "beam_deflection_simply_supported",
+    "input_values": {
+      "w": 10,
+      "L": 5,
+      "E": 200,
+      "I": 0.0001
+    }
+  }'
+```
 
-# Run the container
-docker run -d -p 8501:8501 --name streamlit-app streamlit-app
+**Response:**
 
-# View logs
-docker logs -f streamlit-app
+```json
+{
+  "success": true,
+  "formula_id": "beam_deflection_simply_supported",
+  "result": 0.00065104,
+  "unit": "m",
+  "error": null,
+  "execution_time_ms": 1.23,
+  "timestamp": "2024-01-01T12:00:00Z"
+}
+```
 
-# Stop and remove
-docker stop streamlit-app
-docker rm streamlit-app
+### List All Formulas
+
+```bash
+curl -X GET http://localhost:8000/api/v1/formulas/list \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+
+### Get Formula Information
+
+```bash
+curl -X GET http://localhost:8000/api/v1/formulas/beam_deflection_simply_supported \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Configure the application via `.env` file:
+
+```bash
+# API Configuration
+API_V1_PREFIX=/api/v1
+PROJECT_NAME=Formula Execution API
+VERSION=1.0.0
+ENVIRONMENT=development
+
+# Security
+API_KEY=your-api-key-change-this
+SECRET_KEY=your-secret-key-change-this
+
+# Database
+DATABASE_URL=postgresql://postgres:postgres@db:5432/formulas
+
+# Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# Rate Limiting
+RATE_LIMIT_PER_MINUTE=10
 ```
 
 ## ✅ Testing
@@ -183,30 +250,84 @@ docker rm streamlit-app
 # Run all tests
 make test
 
-# Run tests with coverage
+# Run with coverage
 make test-cov
 
-# Run specific test file
-pytest tests/test_app.py -v
+# Run tests in Docker
+make docker-test
 ```
 
-### Test Structure
+### Test Rate Limiting
+
+```bash
+# Run rate limit test script
+make test-rate-limit
+```
+
+This will send 15 requests to test the rate limiting (limit is 10/minute).
+
+### Manual Testing
+
+```bash
+# Test health endpoint
+curl http://localhost:8000/health
+
+# Test with API key
+export API_KEY="your-api-key"
+
+for i in {1..15}; do
+  curl -X POST http://localhost:8000/api/v1/formulas/execute \
+    -H "X-API-Key: $API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "formula_id": "beam_deflection_simply_supported",
+      "input_values": {"w":10,"L":5,"E":200,"I":0.0001}
+    }'
+  echo ""
+done
+```
+
+## 🔒 Rate Limiting
+
+The API implements distributed rate limiting using Redis:
+
+- **Default Limit**: 10 requests per minute per API key
+- **Burst Allowance**: 5 additional requests
+- **Response**: HTTP 429 (Too Many Requests) when limit exceeded
+
+Configure rate limits in `.env`:
+
+```bash
+RATE_LIMIT_PER_MINUTE=10
+RATE_LIMIT_BURST=5
+```
+
+## 📁 Project Structure
 
 ```
-tests/
-├── __init__.py
-└── test_app.py       # Application tests
-```
-
-### Writing Tests
-
-Tests are written using pytest. Example:
-
-```python
-def test_streamlit_import():
-    """Test that streamlit can be imported."""
-    import streamlit as st
-    assert st is not None
+formula-api/
+├── app/
+│   ├── api/
+│   │   └── v1/
+│   │       └── formulas.py      # Formula API endpoints
+│   ├── core/
+│   │   ├── config.py            # Configuration settings
+│   │   ├── security.py          # API key authentication
+│   │   └── rate_limit.py        # Rate limiting middleware
+│   ├── schemas/
+│   │   └── formula.py           # Pydantic schemas
+│   ├── services/
+│   │   └── formula_service.py   # Formula execution logic
+│   └── main.py                  # FastAPI application
+├── tests/
+│   └── test_app.py              # Test suite
+├── .env.example                 # Environment template
+├── docker-compose.yml           # Docker Compose config
+├── Dockerfile                   # Docker image definition
+├── Makefile                     # Task automation
+├── requirements.txt             # Python dependencies
+├── test_rate_limit.sh           # Rate limit test script
+└── README.md                    # This file
 ```
 
 ## 🛠️ Development
@@ -214,147 +335,91 @@ def test_streamlit_import():
 ### Available Make Commands
 
 ```bash
-make help          # Show all available commands
-make install       # Install dependencies
-make run           # Run the app locally
-make test          # Run tests
-make test-cov      # Run tests with coverage
-make clean         # Remove cache and build files
-make docker-build  # Build Docker image
-make docker-run    # Run Docker container
-make docker-stop   # Stop Docker container
-make format        # Format code with black
-make lint          # Lint code with flake8
+make help              # Show all commands
+make install           # Install dependencies
+make run               # Run locally (requires Redis)
+make test              # Run tests
+make test-cov          # Run tests with coverage
+make test-rate-limit   # Test rate limiting
+make docker-build      # Build Docker images
+make docker-run        # Run Docker containers
+make docker-stop       # Stop containers
+make docker-logs       # View logs
+make docker-test       # Run tests in Docker
+make clean             # Clean cache files
 ```
 
-### Code Formatting
+### Adding New Formulas
+
+1. Add formula to `app/services/formula_service.py`:
+
+```python
+"your_formula_id": {
+    "name": "Your Formula Name",
+    "description": "Formula description",
+    "parameters": {
+        "param1": "Parameter 1 description",
+        "param2": "Parameter 2 description"
+    },
+    "unit": "unit",
+    "category": "Category",
+    "formula": lambda param1, param2: param1 * param2
+}
+```
+
+2. Add tests in `tests/test_app.py`
+
+3. Update documentation
+
+### API Documentation
+
+Interactive API documentation is automatically generated:
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI JSON**: http://localhost:8000/openapi.json
+
+## 🚢 Deployment
+
+### Production Checklist
+
+- [ ] Change `API_KEY` and `SECRET_KEY` in `.env`
+- [ ] Set `ENVIRONMENT=production`
+- [ ] Configure proper database credentials
+- [ ] Set up SSL/TLS certificates
+- [ ] Configure firewall rules
+- [ ] Set up monitoring and logging
+- [ ] Enable backup for PostgreSQL
+- [ ] Configure Redis persistence
+
+### Deploy to Cloud
+
+#### AWS (ECS)
 
 ```bash
-# Install development dependencies
-pip install black flake8
-
-# Format code
-make format
-
-# Lint code
-make lint
+# Build and push image
+docker build -t formula-api .
+docker tag formula-api:latest YOUR_ECR_REPO/formula-api:latest
+docker push YOUR_ECR_REPO/formula-api:latest
 ```
 
-### Pre-commit Hooks (Optional)
+#### Google Cloud (Cloud Run)
 
 ```bash
-# Install pre-commit
-pip install pre-commit
-
-# Set up hooks
-pre-commit install
-
-# Run manually
-pre-commit run --all-files
+gcloud builds submit --tag gcr.io/YOUR_PROJECT/formula-api
+gcloud run deploy formula-api --image gcr.io/YOUR_PROJECT/formula-api --platform managed
 ```
 
-## 📁 Project Structure
-
-```
-blank-app/
-├── .devcontainer/
-│   └── devcontainer.json       # Dev container configuration
-├── .github/
-│   ├── workflows/
-│   │   └── ci.yml              # CI/CD pipeline
-│   └── CODEOWNERS              # Code ownership
-├── .streamlit/
-│   └── config.toml             # Streamlit configuration
-├── tests/
-│   ├── __init__.py
-│   └── test_app.py             # Application tests
-├── .env.example                # Environment variables template
-├── .gitignore                  # Git ignore rules
-├── docker-compose.yml          # Docker Compose configuration
-├── Dockerfile                  # Docker image definition
-├── LICENSE                     # MIT License
-├── Makefile                    # Task automation
-├── packages.txt                # System packages
-├── pytest.ini                  # Pytest configuration
-├── README.md                   # This file
-├── requirements.txt            # Python dependencies
-└── streamlit_app.py            # Main application
-```
-
-## ⚙️ Configuration
-
-### Environment Variables
-
-Copy `.env.example` to `.env` and configure:
+#### Heroku
 
 ```bash
-# App Configuration
-APP_NAME="My Streamlit App"
-APP_VERSION="1.0.0"
-ENVIRONMENT="development"
-
-# Streamlit Configuration
-STREAMLIT_SERVER_PORT=8501
-STREAMLIT_SERVER_ADDRESS=0.0.0.0
+heroku container:push web -a your-app-name
+heroku container:release web -a your-app-name
 ```
 
-### Streamlit Configuration
+## 📄 License
 
-Customize the app appearance in `.streamlit/config.toml`:
-
-```toml
-[theme]
-primaryColor = "#F63366"
-backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F0F2F6"
-textColor = "#262730"
-font = "sans serif"
-
-[server]
-headless = true
-enableCORS = false
-```
-
-## 🚀 Deployment
-
-### Streamlit Community Cloud
-
-1. Push your code to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Deploy your app with one click
-
-### Docker Deployment
-
-```bash
-# Build and push to Docker Hub
-docker build -t yourusername/streamlit-app:latest .
-docker push yourusername/streamlit-app:latest
-
-# Deploy on your server
-docker pull yourusername/streamlit-app:latest
-docker run -d -p 8501:8501 yourusername/streamlit-app:latest
-```
-
-### Heroku
-
-```bash
-# Install Heroku CLI and login
-heroku login
-
-# Create app
-heroku create your-app-name
-
-# Deploy
-git push heroku main
-```
-
-### AWS / GCP / Azure
-
-Refer to the respective cloud provider documentation for container deployment:
-
-- [AWS ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html)
-- [Google Cloud Run](https://cloud.google.com/run/docs)
-- [Azure Container Instances](https://docs.microsoft.com/en-us/azure/container-instances/)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
 
@@ -366,36 +431,20 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Development Guidelines
+## 📧 Support
 
-- Write tests for new features
-- Follow PEP 8 style guide
-- Update documentation as needed
-- Ensure all tests pass before submitting PR
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- 📖 Documentation: http://localhost:8000/docs
+- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/formula-api/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/formula-api/discussions)
 
 ## 🙏 Acknowledgments
 
-- [Streamlit](https://streamlit.io/) for the amazing framework
-- [Docker](https://www.docker.com/) for containerization
-- [pytest](https://pytest.org/) for testing framework
-- [GitHub Actions](https://github.com/features/actions) for CI/CD
-
-## 📞 Support
-
-- 📧 Email: support@example.com
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/blank-app/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/blank-app/discussions)
-
-## 🔗 Links
-
-- [Streamlit Documentation](https://docs.streamlit.io/)
-- [Docker Documentation](https://docs.docker.com/)
-- [pytest Documentation](https://docs.pytest.org/)
+- [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework
+- [Pydantic](https://pydantic-docs.helpmanual.io/) - Data validation
+- [Redis](https://redis.io/) - Rate limiting and caching
+- [PostgreSQL](https://www.postgresql.org/) - Database
+- [Uvicorn](https://www.uvicorn.org/) - ASGI server
 
 ---
 
-Built with ❤️ using [Streamlit](https://streamlit.io/)
+Built with ❤️ using [FastAPI](https://fastapi.tiangolo.com/)

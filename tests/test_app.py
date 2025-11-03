@@ -1,46 +1,139 @@
-"""Tests for the Streamlit application."""
+"""Tests for the FastAPI application"""
 
 import pytest
-from unittest.mock import patch, MagicMock
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+# Test API key
+TEST_API_KEY = "test-api-key"
 
 
-def test_streamlit_import():
-    """Test that streamlit can be imported."""
-    import streamlit as st
-    assert st is not None
+def test_health_endpoint():
+    """Test the health check endpoint"""
+    response = client.get("/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert "version" in data
+    assert "environment" in data
 
 
-def test_app_runs():
-    """Test that the app file exists and can be imported."""
-    import importlib.util
-    import sys
-
-    spec = importlib.util.spec_from_file_location("streamlit_app", "streamlit_app.py")
-    assert spec is not None
-
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["streamlit_app"] = module
-
-    # Mock streamlit functions to prevent actual app execution
-    with patch('streamlit.title'), patch('streamlit.write'):
-        spec.loader.exec_module(module)
+def test_root_endpoint():
+    """Test the root endpoint"""
+    response = client.get("/")
+    assert response.status_code == 200
+    data = response.json()
+    assert "name" in data
+    assert "version" in data
+    assert "docs" in data
 
 
-@patch('streamlit.title')
-@patch('streamlit.write')
-def test_app_title(mock_write, mock_title):
-    """Test that the app sets a title."""
-    import importlib.util
-    import sys
+def test_execute_formula_without_api_key():
+    """Test formula execution without API key"""
+    response = client.post(
+        "/api/v1/formulas/execute",
+        json={
+            "formula_id": "beam_deflection_simply_supported",
+            "input_values": {"w": 10, "L": 5, "E": 200, "I": 0.0001}
+        }
+    )
+    assert response.status_code == 403
 
-    spec = importlib.util.spec_from_file_location("streamlit_app", "streamlit_app.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["streamlit_app"] = module
-    spec.loader.exec_module(module)
 
-    mock_title.assert_called_once()
-    mock_write.assert_called_once()
+def test_list_formulas_without_api_key():
+    """Test listing formulas without API key"""
+    response = client.get("/api/v1/formulas/list")
+    assert response.status_code == 403
+
+
+def test_formula_service_beam_deflection():
+    """Test beam deflection formula calculation"""
+    from app.services.formula_service import formula_service
+
+    result, unit = formula_service.execute(
+        "beam_deflection_simply_supported",
+        {"w": 10, "L": 5, "E": 200, "I": 0.0001}
+    )
+
+    assert result > 0
+    assert unit == "m"
+    assert abs(result - 0.00065104) < 0.00001
+
+
+def test_formula_service_invalid_formula():
+    """Test formula service with invalid formula ID"""
+    from app.services.formula_service import formula_service
+
+    with pytest.raises(ValueError, match="Formula .* not found"):
+        formula_service.execute(
+            "invalid_formula",
+            {"w": 10}
+        )
+
+
+def test_formula_service_missing_parameters():
+    """Test formula service with missing parameters"""
+    from app.services.formula_service import formula_service
+
+    with pytest.raises(ValueError, match="Missing parameters"):
+        formula_service.execute(
+            "beam_deflection_simply_supported",
+            {"w": 10, "L": 5}  # Missing E and I
+        )
+
+
+def test_formula_service_list_formulas():
+    """Test listing all formulas"""
+    from app.services.formula_service import formula_service
+
+    formulas = formula_service.list_formulas()
+
+    assert len(formulas) > 0
+    assert all("formula_id" in f for f in formulas)
+    assert all("name" in f for f in formulas)
+    assert all("parameters" in f for f in formulas)
+
+
+def test_formula_service_get_info():
+    """Test getting formula information"""
+    from app.services.formula_service import formula_service
+
+    info = formula_service.get_formula_info("beam_deflection_simply_supported")
+
+    assert info["formula_id"] == "beam_deflection_simply_supported"
+    assert "name" in info
+    assert "description" in info
+    assert "parameters" in info
+    assert "unit" in info
+
+
+def test_reynolds_number_formula():
+    """Test Reynolds number calculation"""
+    from app.services.formula_service import formula_service
+
+    result, unit = formula_service.execute(
+        "reynolds_number",
+        {"rho": 1000, "v": 2, "L": 0.5, "mu": 0.001}
+    )
+
+    assert result == 1000000
+    assert unit == "dimensionless"
+
+
+def test_spring_deflection_formula():
+    """Test spring deflection calculation"""
+    from app.services.formula_service import formula_service
+
+    result, unit = formula_service.execute(
+        "spring_deflection",
+        {"F": 100, "k": 1000}
+    )
+
+    assert result == 0.1
+    assert unit == "m"
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    pytest.main([__file__, "-v"])

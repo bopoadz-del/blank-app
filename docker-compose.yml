@@ -1,31 +1,74 @@
 version: '3.8'
 
 services:
-  streamlit:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: streamlit-app
+    container_name: formula-api-backend
     ports:
-      - "8501:8501"
+      - "8000:8000"
     volumes:
-      - .:/app
-      - /app/__pycache__
+      - ./app:/app/app
     environment:
-      - ENVIRONMENT=${ENVIRONMENT:-development}
-      - APP_NAME=${APP_NAME:-My Streamlit App}
+      - ENVIRONMENT=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/formulas
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - API_KEY=${API_KEY:-your-api-key-change-this}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this}
     env_file:
       - .env
+    depends_on:
+      - db
+      - redis
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 5s
+      start_period: 10s
     networks:
-      - streamlit-network
+      - backend-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: formula-api-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=formulas
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: formula-api-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+
+volumes:
+  postgres_data:
 
 networks:
-  streamlit-network:
+  backend-network:
     driver: bridge
