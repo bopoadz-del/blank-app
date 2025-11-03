@@ -1,0 +1,314 @@
+# Universal Context Rules for Formula Selection
+# Domain-agnostic patterns for mathematical reasoning
+
+# Format:
+# context_name:
+#   keywords: [list of keywords to detect this context]
+#   parameter_patterns: [parameter naming patterns]
+#   formulas: [relevant formula IDs]
+#   domain: primary domain
+#   priority: selection priority (1-10, higher = more specific)
+
+structural_mechanics:
+  keywords:
+    - "beam"
+    - "deflection"
+    - "bending"
+    - "moment"
+    - "stress"
+    - "strain"
+    - "column"
+    - "buckling"
+    - "shear"
+    - "load"
+    - "structural"
+  parameter_patterns:
+    - "E"  # Elastic modulus
+    - "I"  # Moment of inertia
+    - "L"  # Length
+    - "w"  # Load
+    - "P"  # Force
+    - "M"  # Moment
+    - "sigma"  # Stress
+    - "epsilon"  # Strain
+  formulas:
+    - "beam_deflection_simply_supported"
+    - "beam_bending_stress"
+    - "column_buckling_euler"
+    - "shear_stress"
+    - "cantilever_deflection"
+  domain: "structural_engineering"
+  priority: 8
+
+concrete_materials:
+  keywords:
+    - "concrete"
+    - "cement"
+    - "compressive strength"
+    - "tensile strength"
+    - "maturity"
+    - "w/c ratio"
+    - "slump"
+    - "mix design"
+  parameter_patterns:
+    - "f_c"  # Compressive strength
+    - "f_t"  # Tensile strength
+    - "w_c_ratio"  # Water-cement ratio
+    - "maturity"
+    - "S_ultimate"
+    - "cement_content"
+  formulas:
+    - "concrete_compressive_strength_maturity"
+    - "concrete_tensile_strength"
+    - "slump_flow_prediction"
+    - "modulus_elasticity_concrete"
+  domain: "concrete_technology"
+  priority: 9
+
+financial_analysis:
+  keywords:
+    - "npv"
+    - "irr"
+    - "return"
+    - "discount"
+    - "cash flow"
+    - "investment"
+    - "sharpe"
+    - "portfolio"
+    - "risk"
+    - "volatility"
+  parameter_patterns:
+    - "r"  # Rate
+    - "cash_flows"
+    - "portfolio_return"
+    - "risk_free_rate"
+    - "std"  # Standard deviation
+    - "years"
+    - "initial_investment"
+  formulas:
+    - "npv_net_present_value"
+    - "irr_internal_rate_return"
+    - "sharpe_ratio"
+    - "capm_expected_return"
+    - "compound_growth_rate"
+  domain: "financial_metrics"
+  priority: 7
+
+thermal_systems:
+  keywords:
+    - "heat"
+    - "temperature"
+    - "thermal"
+    - "conduction"
+    - "convection"
+    - "radiation"
+    - "heat transfer"
+    - "insulation"
+    - "R-value"
+  parameter_patterns:
+    - "T"  # Temperature
+    - "k"  # Thermal conductivity
+    - "q"  # Heat flow
+    - "A"  # Area
+    - "alpha"  # Thermal expansion coefficient
+    - "h"  # Convection coefficient
+  formulas:
+    - "heat_transfer_conduction"
+    - "thermal_expansion_linear"
+    - "heat_convection"
+    - "thermal_resistance"
+    - "heat_loss_building"
+  domain: "thermal_analysis"
+  priority: 7
+
+fluid_mechanics:
+  keywords:
+    - "flow"
+    - "reynolds"
+    - "fluid"
+    - "velocity"
+    - "pipe"
+    - "pressure drop"
+    - "viscosity"
+    - "laminar"
+    - "turbulent"
+  parameter_patterns:
+    - "Re"  # Reynolds number
+    - "v"  # Velocity
+    - "rho"  # Density
+    - "mu"  # Viscosity
+    - "D"  # Diameter
+    - "Q"  # Flow rate
+    - "P"  # Pressure
+  formulas:
+    - "fluid_reynolds_number"
+    - "darcy_weisbach_pressure_drop"
+    - "bernoulli_equation"
+    - "flow_rate_pipe"
+  domain: "fluid_dynamics"
+  priority: 7
+
+electrical_power:
+  keywords:
+    - "power"
+    - "voltage"
+    - "current"
+    - "resistance"
+    - "electrical"
+    - "watt"
+    - "ohm"
+    - "circuit"
+    - "energy"
+  parameter_patterns:
+    - "V"  # Voltage
+    - "I"  # Current
+    - "R"  # Resistance
+    - "P"  # Power
+    - "E"  # Energy
+    - "PF"  # Power factor
+  formulas:
+    - "electrical_power"
+    - "ohms_law"
+    - "energy_consumption"
+    - "three_phase_power"
+  domain: "energy_systems"
+  priority: 6
+
+geotechnical_analysis:
+  keywords:
+    - "soil"
+    - "bearing"
+    - "foundation"
+    - "settlement"
+    - "pile"
+    - "friction angle"
+    - "cohesion"
+    - "geotechnical"
+  parameter_patterns:
+    - "q"  # Bearing capacity
+    - "phi"  # Friction angle
+    - "c"  # Cohesion
+    - "gamma"  # Unit weight
+    - "B"  # Width
+    - "D"  # Depth
+  formulas:
+    - "bearing_capacity_terzaghi"
+    - "settlement_consolidation"
+    - "pile_capacity_alpha"
+    - "lateral_earth_pressure"
+  domain: "geotechnical"
+  priority: 8
+
+chemical_reactions:
+  keywords:
+    - "reaction"
+    - "chemical"
+    - "concentration"
+    - "rate"
+    - "activation energy"
+    - "equilibrium"
+    - "catalyst"
+  parameter_patterns:
+    - "k"  # Rate constant
+    - "Ea"  # Activation energy
+    - "T"  # Temperature
+    - "C"  # Concentration
+    - "t"  # Time
+  formulas:
+    - "arrhenius_equation"
+    - "reaction_rate_order"
+    - "half_life_first_order"
+  domain: "chemical_engineering"
+  priority: 6
+
+manufacturing_metrics:
+  keywords:
+    - "production"
+    - "throughput"
+    - "cycle time"
+    - "efficiency"
+    - "oee"
+    - "capacity"
+    - "utilization"
+  parameter_patterns:
+    - "rate"
+    - "time"
+    - "units"
+    - "efficiency"
+    - "availability"
+  formulas:
+    - "oee_overall_equipment_effectiveness"
+    - "takt_time"
+    - "throughput_capacity"
+  domain: "manufacturing"
+  priority: 5
+
+# ================== SELECTION PRIORITY ==================
+# When multiple contexts match, use priority and specificity
+
+priority_order:
+  - concrete_materials  # 9 - Most specific
+  - structural_mechanics  # 8
+  - geotechnical_analysis  # 8
+  - financial_analysis  # 7
+  - thermal_systems  # 7
+  - fluid_mechanics  # 7
+  - electrical_power  # 6
+  - chemical_reactions  # 6
+  - manufacturing_metrics  # 5
+
+# ================== DOMAIN GROUPINGS ==================
+# For broader categorization
+
+domain_families:
+  civil_engineering:
+    - structural_engineering
+    - concrete_technology
+    - geotechnical
+  
+  mechanical_engineering:
+    - thermal_analysis
+    - fluid_dynamics
+    - manufacturing
+  
+  financial_engineering:
+    - financial_metrics
+  
+  electrical_engineering:
+    - energy_systems
+  
+  chemical_engineering:
+    - chemical_engineering
+
+# ================== PARAMETER HINTS ==================
+# Direct parameter -> formula mapping
+
+parameter_to_formula:
+  w_c_ratio:
+    - "concrete_compressive_strength_maturity"
+    - "slump_flow_prediction"
+  
+  cash_flows:
+    - "npv_net_present_value"
+  
+  reynolds:
+    - "fluid_reynolds_number"
+  
+  beam_length:
+    - "beam_deflection_simply_supported"
+  
+  thermal_conductivity:
+    - "heat_transfer_conduction"
+
+# ================== AMBIGUITY RESOLUTION ==================
+# Rules for handling ambiguous contexts
+
+ambiguity_rules:
+  - rule: "If both structural and concrete keywords present, prefer concrete_materials"
+    priority: concrete_materials
+  
+  - rule: "If both financial and time parameters, prefer financial_analysis"
+    priority: financial_analysis
+  
+  - rule: "Default to most specific context with highest keyword match count"
+    method: "count_keywords"

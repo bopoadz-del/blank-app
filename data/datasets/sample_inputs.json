@@ -1,0 +1,152 @@
+{
+  "concrete_compressive_strength_maturity": {
+    "input_values": {"S_ultimate": 40, "k": 0.005, "maturity": 500},
+    "expected_output": {"strength": 31.6},
+    "description": "Concrete at 500 degree-hours maturity"
+  },
+  "beam_deflection_simply_supported": {
+    "input_values": {"w": 10, "L": 5, "E": 200, "I": 0.0001},
+    "expected_output": {"deflection": 0.00203},
+    "description": "5m steel beam with 10 kN/m load"
+  },
+  "cantilever_beam_deflection": {
+    "input_values": {"P": 5, "L": 3, "E": 200, "I": 0.00005},
+    "expected_output": {"deflection": 0.0045},
+    "description": "3m cantilever with 5 kN point load"
+  },
+  "beam_bending_stress": {
+    "input_values": {"M": 50, "c": 0.15, "I": 0.0001},
+    "expected_output": {"sigma": 75},
+    "description": "Beam under 50 kNm moment"
+  },
+  "shear_stress_beam": {
+    "input_values": {"V": 100, "b": 0.3, "h": 0.6},
+    "expected_output": {"tau": 0.833},
+    "description": "Rectangular beam with 100 kN shear"
+  },
+  "column_buckling_euler": {
+    "input_values": {"E": 200, "I": 0.0001, "L": 4, "K": 1.0},
+    "expected_output": {"P_cr": 1233.7},
+    "description": "4m pinned-pinned column"
+  },
+  "plate_deflection_uniform": {
+    "input_values": {"q": 5, "a": 2, "E": 200, "h": 0.01},
+    "expected_output": {"deflection": 0.0022},
+    "description": "2m square plate with 5 kPa load"
+  },
+  "concrete_tensile_strength": {
+    "input_values": {"f_c": 30},
+    "expected_output": {"f_t": 3.07},
+    "description": "Concrete with 30 MPa compressive strength"
+  },
+  "concrete_modulus_elasticity": {
+    "input_values": {"f_c": 30},
+    "expected_output": {"E_c": 25743},
+    "description": "Elastic modulus for 30 MPa concrete"
+  },
+  "concrete_slump_flow": {
+    "input_values": {"slump_base": 100, "w_c_ratio": 0.45, "SP_dosage": 1.0},
+    "expected_output": {"slump_flow": 152},
+    "description": "Self-consolidating concrete mix"
+  },
+  "npv_net_present_value": {
+    "input_values": {"cash_flows": [-100000, 30000, 40000, 50000], "r": 0.10},
+    "expected_output": {"npv": 3415},
+    "description": "3-year investment project"
+  },
+  "irr_approximation": {
+    "input_values": {"initial_investment": 100000, "final_value": 150000, "years": 5},
+    "expected_output": {"irr": 0.0845},
+    "description": "Simple investment return"
+  },
+  "sharpe_ratio": {
+    "input_values": {"portfolio_return": 0.12, "risk_free_rate": 0.03, "portfolio_std": 0.15},
+    "expected_output": {"sharpe": 0.6},
+    "description": "Portfolio risk-adjusted return"
+  },
+  "capm_expected_return": {
+    "input_values": {"risk_free_rate": 0.03, "beta": 1.2, "market_return": 0.10},
+    "expected_output": {"expected_return": 0.114},
+    "description": "Stock expected return"
+  },
+  "cagr_compound_growth": {
+    "input_values": {"beginning_value": 100000, "ending_value": 150000, "years": 5},
+    "expected_output": {"cagr": 0.0845},
+    "description": "5-year growth rate"
+  },
+  "heat_transfer_conduction": {
+    "input_values": {"k": 0.8, "A": 10, "T_hot": 100, "T_cold": 20, "thickness": 0.2},
+    "expected_output": {"q": 3200},
+    "description": "Heat through insulated wall"
+  },
+  "thermal_expansion_linear": {
+    "input_values": {"L_0": 10, "alpha": 1.2e-5, "delta_T": 50},
+    "expected_output": {"delta_L": 0.006},
+    "description": "Steel beam thermal expansion"
+  },
+  "heat_convection": {
+    "input_values": {"h": 100, "A": 2, "T_surface": 80, "T_fluid": 20},
+    "expected_output": {"q": 12000},
+    "description": "Convective cooling of heated surface"
+  },
+  "thermal_resistance_wall": {
+    "input_values": {"thickness": 0.15, "k": 0.04},
+    "expected_output": {"R_value": 3.75},
+    "description": "Insulation R-value"
+  },
+  "fluid_reynolds_number": {
+    "input_values": {"rho": 1000, "v": 2, "D": 0.1, "mu": 0.001},
+    "expected_output": {"Re": 200000},
+    "description": "Water flow in pipe"
+  },
+  "darcy_weisbach_pressure_drop": {
+    "input_values": {"f": 0.02, "L": 100, "D": 0.1, "rho": 1000, "v": 2},
+    "expected_output": {"dP": 40000},
+    "description": "Pressure loss in 100m pipe"
+  },
+  "bernoulli_equation": {
+    "input_values": {"P1": 100000, "rho": 1000, "v1": 2, "g": 9.81, "z1": 10},
+    "expected_output": {"total_head": 200100},
+    "description": "Total head at point 1"
+  },
+  "electrical_power_ohms_law": {
+    "input_values": {"V": 230, "I": 10},
+    "expected_output": {"P": 2300},
+    "description": "Single-phase electrical power"
+  },
+  "three_phase_power": {
+    "input_values": {"V_line": 400, "I_line": 100, "PF": 0.9},
+    "expected_output": {"P_3phase": 62354},
+    "description": "Industrial three-phase motor"
+  },
+  "energy_consumption": {
+    "input_values": {"P": 5, "t": 10},
+    "expected_output": {"E": 50},
+    "description": "Machine running 10 hours"
+  },
+  "bearing_capacity_terzaghi": {
+    "input_values": {"c": 20, "N_c": 30, "gamma": 18, "D": 1.5, "N_q": 20, "B": 2, "N_gamma": 15},
+    "expected_output": {"q_ult": 1410},
+    "description": "Shallow foundation on clay"
+  },
+  "settlement_consolidation": {
+    "input_values": {"C_c": 0.3, "H": 5, "P0": 100, "delta_P": 50, "e0": 0.8},
+    "expected_output": {"settlement": 0.147},
+    "description": "Building settlement on soft clay"
+  },
+  "pile_capacity": {
+    "input_values": {"q_tip": 5000, "A_tip": 0.2, "f_avg": 50, "A_shaft": 10},
+    "expected_output": {"Q_ult": 1500},
+    "description": "Driven pile capacity"
+  },
+  "oee_equipment_effectiveness": {
+    "input_values": {"availability": 0.9, "performance": 0.95, "quality": 0.98},
+    "expected_output": {"OEE": 0.838},
+    "description": "Manufacturing line efficiency"
+  },
+  "takt_time": {
+    "input_values": {"available_time": 28800, "customer_demand": 480},
+    "expected_output": {"takt_time": 60},
+    "description": "8-hour shift with 480 unit demand"
+  }
+}
