@@ -8,6 +8,8 @@ from app.core.config import settings
 from app.core.rate_limit import rate_limiter
 from app.api.v1 import formulas
 from app.schemas.formula import HealthResponse
+from app.database.session import engine
+from app.models import formula_execution  # Import models for table creation
 
 
 @asynccontextmanager
@@ -15,7 +17,13 @@ async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
     await rate_limiter.init_redis()
+
+    # Create database tables
+    from app.database.session import Base
+    Base.metadata.create_all(bind=engine)
+
     yield
+
     # Shutdown
     await rate_limiter.close_redis()
 

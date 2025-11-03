@@ -10,6 +10,7 @@ class FormulaExecuteRequest(BaseModel):
 
     formula_id: str = Field(..., description="ID of the formula to execute")
     input_values: Dict[str, float] = Field(..., description="Input parameters for the formula")
+    convert_to_unit: Optional[str] = Field(None, description="Convert result to this unit (optional)")
 
     class Config:
         json_schema_extra = {
@@ -20,7 +21,8 @@ class FormulaExecuteRequest(BaseModel):
                     "L": 5.0,
                     "E": 200.0,
                     "I": 0.0001
-                }
+                },
+                "convert_to_unit": "mm"
             }
         }
 
@@ -32,8 +34,11 @@ class FormulaExecuteResponse(BaseModel):
     formula_id: str = Field(..., description="ID of the executed formula")
     result: Optional[float] = Field(None, description="Calculation result")
     unit: Optional[str] = Field(None, description="Unit of the result")
+    original_unit: Optional[str] = Field(None, description="Original unit before conversion")
     error: Optional[str] = Field(None, description="Error message if execution failed")
     execution_time_ms: float = Field(..., description="Execution time in milliseconds")
+    execution_id: Optional[int] = Field(None, description="Database execution ID")
+    mlflow_run_id: Optional[str] = Field(None, description="MLflow run ID")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Execution timestamp")
 
     class Config:
@@ -41,10 +46,13 @@ class FormulaExecuteResponse(BaseModel):
             "example": {
                 "success": True,
                 "formula_id": "beam_deflection_simply_supported",
-                "result": 0.00065104,
-                "unit": "m",
+                "result": 0.65104,
+                "unit": "mm",
+                "original_unit": "m",
                 "error": None,
                 "execution_time_ms": 1.23,
+                "execution_id": 42,
+                "mlflow_run_id": "abc123def456",
                 "timestamp": "2024-01-01T12:00:00Z"
             }
         }

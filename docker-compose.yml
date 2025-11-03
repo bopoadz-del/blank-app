@@ -17,11 +17,13 @@ services:
       - REDIS_PORT=6379
       - API_KEY=${API_KEY:-your-api-key-change-this}
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this}
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
     env_file:
       - .env
     depends_on:
       - db
       - redis
+      - mlflow
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -66,8 +68,31 @@ services:
     networks:
       - backend-network
 
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.19.0
+    container_name: formula-api-mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      - BACKEND_STORE_URI=postgresql://postgres:postgres@db:5432/mlflow
+      - DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
+    volumes:
+      - mlflow_data:/mlflow
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://postgres:postgres@db:5432/mlflow
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+      --port 5000
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - backend-network
+
 volumes:
   postgres_data:
+  mlflow_data:
 
 networks:
   backend-network:
