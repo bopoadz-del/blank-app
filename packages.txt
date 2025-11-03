@@ -1,0 +1,13 @@
+# System packages required for the application
+# These will be installed via apt-get during deployment
+
+# For image processing
+# libgl1-mesa-glx
+# libglib2.0-0
+
+# For networking
+# curl
+# wget
+
+# For data processing
+# build-essential
