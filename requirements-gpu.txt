@@ -1,0 +1,134 @@
+# GPU-Accelerated Dependencies
+# Install with: pip install -r requirements-gpu.txt
+#
+# Prerequisites:
+# - NVIDIA GPU with CUDA support
+# - CUDA 11.8 or 12.1 installed
+# - cuDNN installed
+
+# ============================================================================
+# API and Backend Dependencies
+# ============================================================================
+fastapi==0.115.5
+uvicorn[standard]==0.34.0
+pydantic==2.10.3
+pydantic-settings==2.6.1
+python-multipart==0.0.20
+redis==5.2.1
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+mlflow==2.19.0
+pint==0.24.4
+pytest==8.3.4
+pytest-cov==6.0.0
+pytest-asyncio==0.24.0
+httpx==0.28.1
+
+# ============================================================================
+# Core Scientific Computing
+# ============================================================================
+numpy>=1.21.0,<2.0.0
+scipy>=1.7.0
+pandas>=1.3.0
+
+# ============================================================================
+# Machine Learning Libraries (with GPU support)
+# ============================================================================
+scikit-learn>=1.0.0
+
+# Gradient Boosting with GPU support
+xgboost>=1.5.0  # GPU support via CUDA
+lightgbm>=3.3.0  # GPU support via CUDA or OpenCL
+catboost>=1.0.0  # GPU support via CUDA
+
+# ============================================================================
+# PyTorch with CUDA 11.8 support
+# ============================================================================
+# For CUDA 11.8 (recommended)
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Alternative: For CUDA 12.1
+# --extra-index-url https://download.pytorch.org/whl/cu121
+# torch>=2.0.0
+# torchvision>=0.15.0
+# torchaudio>=2.0.0
+
+# ============================================================================
+# TensorFlow with GPU support
+# ============================================================================
+# TensorFlow 2.12+ automatically includes GPU support if CUDA is available
+tensorflow>=2.12.0,<3.0.0
+
+# Alternative: Explicit GPU version (older TensorFlow)
+# tensorflow-gpu>=2.8.0,<2.12.0
+
+# ============================================================================
+# NLP and Transformers
+# ============================================================================
+transformers>=4.20.0
+tokenizers>=0.13.0
+sentencepiece>=0.1.96
+accelerate>=0.20.0  # Hugging Face GPU acceleration
+
+# ============================================================================
+# Computer Vision
+# ============================================================================
+opencv-python>=4.5.0
+Pillow>=9.0.0
+albumentations>=1.3.0
+
+# ============================================================================
+# Hyperparameter Optimization (GPU-aware)
+# ============================================================================
+optuna>=3.0.0
+ray[tune]>=2.0.0
+ray[default]>=2.0.0
+
+# ============================================================================
+# Model Serving
+# ============================================================================
+onnx>=1.12.0
+# ONNX Runtime with GPU support
+onnxruntime-gpu>=1.12.0
+joblib>=1.1.0
+
+# ============================================================================
+# GPU Utilities and Monitoring
+# ============================================================================
+# NVIDIA GPU monitoring
+nvidia-ml-py3>=7.352.0
+gpustat>=1.0.0
+
+# ============================================================================
+# CUDA Accelerated Libraries (optional)
+# ============================================================================
+# cupy-cuda11x>=12.0.0  # NumPy-compatible array library on GPU
+# cudf-cu11>=23.0.0  # GPU DataFrame library (requires RAPIDS)
+# cugraph-cu11>=23.0.0  # GPU graph analytics
+
+# ============================================================================
+# Visualization
+# ============================================================================
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# ============================================================================
+# Utilities
+# ============================================================================
+tqdm>=4.62.0
+pyyaml>=6.0
+
+# ============================================================================
+# Notes
+# ============================================================================
+# 1. For PyTorch, choose the CUDA version that matches your installed CUDA toolkit
+# 2. TensorFlow 2.12+ automatically detects and uses GPU if CUDA is available
+# 3. XGBoost, LightGBM, and CatBoost require specific compilation for GPU support
+# 4. ONNX Runtime GPU requires CUDA and cuDNN to be installed
+# 5. RAPIDS libraries (cuDF, cuGraph) require conda installation for best compatibility
