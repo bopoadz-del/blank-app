@@ -50,3 +50,21 @@ export interface ModelInfo {
   accuracy?: number;
   createdAt: string;
 }
+
+export interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  conversations: Conversation[];
+  createdAt: string;
+  updatedAt: string;
+  color?: string;
+}
+
+export interface FileAttachment {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  url?: string;
+}
