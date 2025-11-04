@@ -50,6 +50,13 @@ from app.models.edge_devices import (
     DriftMetric,
     RetrainJob
 )
+from app.models.ethical_layer import (
+    KnowledgeSource,
+    FormulaValidationResult,
+    EthicalOverride,
+    EthicalConfiguration,
+    EthicalAuditLog
+)
 
 # Create database tables
 database.Base.metadata.create_all(bind=engine)
@@ -246,6 +253,13 @@ from app.api.drift_routes import router as drift_router
 app.include_router(
     drift_router,
     tags=["drift-retrain"]
+)
+
+# Register ethical layer routes
+from app.api.ethical_routes import router as ethical_router
+app.include_router(
+    ethical_router,
+    tags=["ethical-layer"]
 )
 
 
