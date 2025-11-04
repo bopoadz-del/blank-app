@@ -59,7 +59,7 @@ class SafetyIncident(Base):
     incident_id = Column(String(255), unique=True, nullable=False, index=True)
 
     # Classification
-    prohibited_category = Column(SQLEnum(ProhibitedCategory), nullable=False, index=True)
+    prohibited_category = Column(SQLEnum(ProhibitedCategory), nullable=True, index=True)  # Nullable for non-category incidents
     safety_action = Column(SQLEnum(SafetyAction), nullable=False)
     alert_level = Column(SQLEnum(AlertLevel), nullable=False, index=True)
 

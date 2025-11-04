@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.services.reasoner import reasoner_engine
 from app.services.tinker import tinker_ml
 from app.services.units import unit_service
+from app.services.safety_pipeline import SafetyPipeline
 from app.repositories.repositories import (
     get_formula_repository,
     get_execution_repository,
@@ -66,8 +67,45 @@ class OrchestrationPipeline:
             Dict with execution results and metadata
         """
         pipeline_start = datetime.utcnow()
-        
+
         try:
+            # ==================== STAGE 0: SAFETY CHECK ====================
+            # CRITICAL: Non-negotiable safety screening BEFORE any processing
+            from app.models.auth import User
+
+            user = None
+            if user_id:
+                user = db.query(User).filter(User.id == user_id).first()
+
+            # Prepare request content for safety check
+            request_content = json.dumps({
+                "formula_id": formula_id,
+                "input_values": input_values,
+                "context_data": context_data
+            })
+
+            # Execute safety pipeline
+            safety_pipeline = SafetyPipeline(db, deployment_name="default")
+            is_safe, safety_incident = safety_pipeline.execute_pipeline(
+                request_content=request_content,
+                user=user,
+                context={
+                    "formula_id": formula_id,
+                    "edge_node_id": edge_node_id,
+                    "ip_address": None,  # Would be populated from request context
+                    "user_agent": None
+                }
+            )
+
+            if not is_safe:
+                logger.critical(f"SAFETY VIOLATION: Request blocked by safety layer. Incident: {safety_incident.incident_id}")
+                return self._error_response(
+                    "safety_violation",
+                    safety_incident.user_message or "Request blocked for safety reasons"
+                )
+
+            logger.info("Safety check passed - proceeding with execution")
+
             # ==================== STAGE 1: LOAD FORMULA ====================
             formula_repo = get_formula_repository(db)
             formula = formula_repo.get_by_id(formula_id)
