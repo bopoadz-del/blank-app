@@ -134,6 +134,133 @@ class ApiService {
     const { data } = await this.client.get('/api/admin/metrics');
     return data;
   }
+
+  // Corrections endpoints
+  async createCorrection(correctionData: {
+    execution_id: number;
+    correction_type: string;
+    corrected_output: any;
+    correction_reason?: string;
+    operator_confidence?: number;
+  }) {
+    const { data } = await this.client.post('/api/v1/corrections', correctionData);
+    return data;
+  }
+
+  async getCorrections(params?: {
+    status_filter?: string;
+    correction_type?: string;
+    limit?: number;
+  }) {
+    const { data } = await this.client.get('/api/v1/corrections', { params });
+    return data;
+  }
+
+  async getCorrection(correctionId: number) {
+    const { data } = await this.client.get(`/api/v1/corrections/${correctionId}`);
+    return data;
+  }
+
+  async reviewCorrection(correctionId: number, reviewData: {
+    status: 'approved' | 'rejected';
+    review_notes?: string;
+  }) {
+    const { data } = await this.client.patch(`/api/v1/corrections/${correctionId}/review`, reviewData);
+    return data;
+  }
+
+  async getPendingCorrectionsCount() {
+    const { data } = await this.client.get('/api/v1/corrections/pending/count');
+    return data;
+  }
+
+  // Certification endpoints
+  async certifyFormula(certificationData: {
+    formula_id: number;
+    to_tier: number;
+    certification_notes?: string;
+    test_accuracy?: any;
+    validation_metrics?: any;
+    review_period_days?: number;
+  }) {
+    const { data } = await this.client.post('/api/v1/certifications', certificationData);
+    return data;
+  }
+
+  async getCertifications(params?: {
+    formula_id?: number;
+    tier?: number;
+    limit?: number;
+  }) {
+    const { data } = await this.client.get('/api/v1/certifications', { params });
+    return data;
+  }
+
+  async getFormulaCertificationHistory(formulaId: number) {
+    const { data } = await this.client.get(`/api/v1/formulas/${formulaId}/certification-history`);
+    return data;
+  }
+
+  // Auditor endpoints
+  async getAuditLogs(params?: {
+    action?: string;
+    entity_type?: string;
+    user_id?: number;
+    days?: number;
+    limit?: number;
+  }) {
+    const { data } = await this.client.get('/api/v1/auditor/audit-logs', { params });
+    return data;
+  }
+
+  async getExecutionTrail(executionId: number) {
+    const { data } = await this.client.get(`/api/v1/auditor/execution-trail/${executionId}`);
+    return data;
+  }
+
+  async getAuditorDashboardStats(days: number = 30) {
+    const { data } = await this.client.get('/api/v1/auditor/dashboard/stats', {
+      params: { days }
+    });
+    return data;
+  }
+
+  async getCorrectionsTimeline(days: number = 30) {
+    const { data } = await this.client.get('/api/v1/auditor/corrections/timeline', {
+      params: { days }
+    });
+    return data;
+  }
+
+  async getFormulaTierDistribution() {
+    const { data } = await this.client.get('/api/v1/auditor/formulas/tier-distribution');
+    return data;
+  }
+
+  // Formula execution endpoints
+  async executeFormula(formulaData: {
+    formula_id: string;
+    input_values: any;
+    context_data?: any;
+  }) {
+    const { data } = await this.client.post('/api/v1/formulas/execute', formulaData);
+    return data;
+  }
+
+  async getFormulas(params?: {
+    domain?: string;
+    status?: string;
+    tier?: number;
+    limit?: number;
+  }) {
+    const { data } = await this.client.get('/api/v1/formulas', { params });
+    return data;
+  }
+
+  async getFormula(formulaId: string) {
+    const { data } = await this.client.get(`/api/v1/formulas/${formulaId}`);
+    return data;
+  }
 }
 
 export const apiService = new ApiService();

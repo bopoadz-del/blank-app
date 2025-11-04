@@ -5,6 +5,9 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { DashboardEnhanced as Dashboard } from './pages/DashboardEnhanced';
 import { AdminPanel } from './pages/AdminPanel';
+import AuditorDashboard from './pages/AuditorDashboard';
+import CertificationPanel from './components/CertificationPanel';
+import FormulaExecution from './pages/FormulaExecution';
 
 const App: React.FC = () => {
   return (
@@ -20,10 +23,34 @@ const App: React.FC = () => {
           }
         />
         <Route
+          path="/formulas"
+          element={
+            <ProtectedRoute>
+              <FormulaExecution />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin"
           element={
             <ProtectedRoute requireAdmin>
               <AdminPanel />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/certifications"
+          element={
+            <ProtectedRoute requireAdmin>
+              <CertificationPanel />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/auditor"
+          element={
+            <ProtectedRoute requireAuditor>
+              <AuditorDashboard />
             </ProtectedRoute>
           }
         />

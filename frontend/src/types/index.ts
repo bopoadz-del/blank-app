@@ -1,8 +1,10 @@
+export type UserRole = 'operator' | 'admin' | 'auditor' | 'system';
+
 export interface User {
   id: string;
   email: string;
   username: string;
-  role: 'user' | 'admin';
+  role: UserRole;
   createdAt: string;
 }
 

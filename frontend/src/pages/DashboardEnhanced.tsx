@@ -14,13 +14,16 @@ import {
   FiMinimize,
   FiSearch,
   FiClock,
+  FiEye,
+  FiAward,
+  FiCpu,
 } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Project, Message } from '../types';
 
 export const DashboardEnhanced: React.FC = () => {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isAuditor } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -228,13 +231,38 @@ export const DashboardEnhanced: React.FC = () => {
               </div>
 
               <div className="space-y-2">
+                <button
+                  onClick={() => navigate('/formulas')}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <FiCpu className="w-4 h-4" />
+                  Formula Execution
+                </button>
                 {isAdmin && (
+                  <>
+                    <button
+                      onClick={() => navigate('/admin')}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <FiShield className="w-4 h-4" />
+                      Admin Panel
+                    </button>
+                    <button
+                      onClick={() => navigate('/admin/certifications')}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <FiAward className="w-4 h-4" />
+                      Certifications
+                    </button>
+                  </>
+                )}
+                {(isAuditor || isAdmin) && (
                   <button
-                    onClick={() => navigate('/admin')}
+                    onClick={() => navigate('/auditor')}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                   >
-                    <FiShield className="w-4 h-4" />
-                    Admin Panel
+                    <FiEye className="w-4 h-4" />
+                    Audit Dashboard
                   </button>
                 )}
                 <button
