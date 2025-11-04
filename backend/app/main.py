@@ -38,6 +38,11 @@ from app.models.notifications import (
     SlackIntegration,
     Report
 )
+from app.models.corrections import (
+    Correction,
+    AuditLog,
+    FormulaCertification
+)
 
 # Create database tables
 database.Base.metadata.create_all(bind=engine)
@@ -196,6 +201,30 @@ app.include_router(
     report_router,
     prefix=f"{settings.API_V1_PREFIX}",
     tags=["reports"]
+)
+
+# Register corrections routes
+from app.api.corrections_routes import router as corrections_router
+app.include_router(
+    corrections_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["corrections"]
+)
+
+# Register certification routes
+from app.api.certification_routes import router as certification_router
+app.include_router(
+    certification_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["certification"]
+)
+
+# Register auditor routes
+from app.api.auditor_routes import router as auditor_router
+app.include_router(
+    auditor_router,
+    prefix=f"{settings.API_V1_PREFIX}/auditor",
+    tags=["auditor"]
 )
 
 
