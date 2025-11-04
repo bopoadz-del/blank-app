@@ -32,6 +32,12 @@ import sqlalchemy as sa
 # Import new models to create tables
 from app.models.auth import User, RefreshToken
 from app.models.chat import Project, Conversation, Message, FileAttachment
+from app.models.notifications import (
+    Notification,
+    NotificationPreferences,
+    SlackIntegration,
+    Report
+)
 
 # Create database tables
 database.Base.metadata.create_all(bind=engine)
@@ -166,6 +172,30 @@ app.include_router(
     admin_router,
     prefix=f"{settings.API_V1_PREFIX}/admin",
     tags=["admin"]
+)
+
+# Register notification routes
+from app.api.notification_routes import router as notification_router
+app.include_router(
+    notification_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["notifications"]
+)
+
+# Register Slack integration routes
+from app.api.slack_routes import router as slack_router
+app.include_router(
+    slack_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["slack"]
+)
+
+# Register report generation routes
+from app.api.report_routes import router as report_router
+app.include_router(
+    report_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["reports"]
 )
 
 
