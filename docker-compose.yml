@@ -1,98 +1,179 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: reasoner-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-formulas}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: reasoner-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-redis}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # MLflow
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.19.0
+    container_name: reasoner-mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      BACKEND_STORE_URI: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/mlflow
+      DEFAULT_ARTIFACT_ROOT: /mlflow/artifacts
+    volumes:
+      - mlflow_data:/mlflow
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/mlflow
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+      --port 5000
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - backend-network
+
+  # Backend API
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: formula-api-backend
+    container_name: reasoner-backend
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-formulas}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis}@redis:6379/0
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:8080}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      API_KEY: ${API_KEY:-your-api-key-change-this}
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/reports:/app/reports
+      - ./backend/logs:/app/logs
     ports:
       - "8000:8000"
-    volumes:
-      - ./app:/app/app
-    environment:
-      - ENVIRONMENT=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/formulas
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - API_KEY=${API_KEY:-your-api-key-change-this}
-      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this}
-      - MLFLOW_TRACKING_URI=http://mlflow:5000
-    env_file:
-      - .env
     depends_on:
-      - db
-      - redis
-      - mlflow
-    restart: unless-stopped
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 40s
     networks:
       - backend-network
-
-  db:
-    image: postgres:16-alpine
-    container_name: formula-api-db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=formulas
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - backend-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: formula-api-redis
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - backend-network
-
-  mlflow:
-    image: ghcr.io/mlflow/mlflow:v2.19.0
-    container_name: formula-api-mlflow
-    ports:
-      - "5000:5000"
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: reasoner-frontend
     environment:
-      - BACKEND_STORE_URI=postgresql://postgres:postgres@db:5432/mlflow
-      - DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
-    volumes:
-      - mlflow_data:/mlflow
-    command: >
-      mlflow server
-      --backend-store-uri postgresql://postgres:postgres@db:5432/mlflow
-      --default-artifact-root /mlflow/artifacts
-      --host 0.0.0.0
-      --port 5000
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    ports:
+      - "8080:8080"
     depends_on:
-      - db
-    restart: unless-stopped
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - backend-network
+    restart: unless-stopped
+
+  # Prometheus (Monitoring)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: reasoner-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # Grafana (Visualization)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: reasoner-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - backend-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
+    driver: local
   mlflow_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
 
 networks:
   backend-network:
