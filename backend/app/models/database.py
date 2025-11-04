@@ -137,15 +137,17 @@ class FormulaExecution(Base):
     
     # Environment
     edge_node_id = Column(String(100))
+    edge_device_id = Column(Integer, ForeignKey("edge_devices.id"), nullable=True, index=True)  # Link to registered edge device
     executed_by = Column(String(100))
     execution_timestamp = Column(DateTime, default=datetime.utcnow, index=True)
-    
+
     # MLflow tracking
     mlflow_run_id = Column(String(100))
-    
+
     # Relationships
     formula = relationship("Formula", back_populates="executions")
     corrections = relationship("Correction", back_populates="execution")
+    edge_device = relationship("EdgeDevice", back_populates="executions", foreign_keys="FormulaExecution.edge_device_id")
     
     __table_args__ = (
         Index("idx_execution_formula_status", "formula_id", "status"),

@@ -43,6 +43,13 @@ from app.models.corrections import (
     AuditLog,
     FormulaCertification
 )
+from app.models.edge_devices import (
+    EdgeDevice,
+    DeviceHeartbeat,
+    ModelDeployment,
+    DriftMetric,
+    RetrainJob
+)
 
 # Create database tables
 database.Base.metadata.create_all(bind=engine)
@@ -225,6 +232,20 @@ app.include_router(
     auditor_router,
     prefix=f"{settings.API_V1_PREFIX}/auditor",
     tags=["auditor"]
+)
+
+# Register edge device routes
+from app.api.edge_device_routes import router as edge_device_router
+app.include_router(
+    edge_device_router,
+    tags=["edge-devices"]
+)
+
+# Register drift detection and retrain routes
+from app.api.drift_routes import router as drift_router
+app.include_router(
+    drift_router,
+    tags=["drift-retrain"]
 )
 
 
