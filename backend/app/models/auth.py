@@ -36,6 +36,9 @@ class User(Base):
     audit_logs = relationship("AuditLog", back_populates="user")
     certifications_made = relationship("FormulaCertification", back_populates="certified_by")
 
+    # Safety layer relationship
+    safety_score = relationship("UserSafetyScore", back_populates="user", uselist=False)
+
 
 class RefreshToken(Base):
     """Refresh token storage."""

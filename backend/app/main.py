@@ -57,6 +57,13 @@ from app.models.ethical_layer import (
     EthicalConfiguration,
     EthicalAuditLog
 )
+from app.models.safety_layer import (
+    SafetyIncident,
+    SafetyPattern,
+    UserSafetyScore,
+    SafetyConfiguration,
+    EmergencyProtocol
+)
 
 # Create database tables
 database.Base.metadata.create_all(bind=engine)
@@ -260,6 +267,13 @@ from app.api.ethical_routes import router as ethical_router
 app.include_router(
     ethical_router,
     tags=["ethical-layer"]
+)
+
+# Register safety layer routes
+from app.api.safety_routes import router as safety_router
+app.include_router(
+    safety_router,
+    tags=["safety-layer"]
 )
 
 
