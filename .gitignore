@@ -177,5 +177,8 @@ cython_debug/
 # Windows
 Thumbs.db
 ehthumbs.db
-Desktop.inifrontend/node_modules/
+Desktop.ini
+
+# Frontend
+frontend/node_modules/
 frontend/dist/
