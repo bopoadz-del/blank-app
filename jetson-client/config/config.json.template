@@ -1,0 +1,11 @@
+{
+  "backend_url": "http://your-backend-server.com:8000",
+  "api_key": null,
+  "heartbeat_interval": 30,
+  "device_name": "Jetson AGX Orin Lab A",
+  "device_type": "jetson_orin",
+  "location": "Lab A - Building 1",
+  "models_dir": "/opt/ml-platform/models",
+  "auto_update": true,
+  "log_level": "INFO"
+}
