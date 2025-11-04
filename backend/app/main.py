@@ -29,6 +29,10 @@ from app.repositories.repositories import (
 )
 import sqlalchemy as sa
 
+# Import new models to create tables
+from app.models.auth import User, RefreshToken
+from app.models.chat import Project, Conversation, Message, FileAttachment
+
 # Create database tables
 database.Base.metadata.create_all(bind=engine)
 
@@ -138,6 +142,30 @@ app.include_router(
     data_context_router,
     prefix=settings.API_V1_PREFIX,
     tags=["data-context"]
+)
+
+# Register authentication routes
+from app.api.auth_routes import router as auth_router
+app.include_router(
+    auth_router,
+    prefix=f"{settings.API_V1_PREFIX}/auth",
+    tags=["authentication"]
+)
+
+# Register chat/conversation/project routes
+from app.api.chat_routes import router as chat_router
+app.include_router(
+    chat_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["chat"]
+)
+
+# Register admin routes
+from app.api.admin_routes import router as admin_router
+app.include_router(
+    admin_router,
+    prefix=f"{settings.API_V1_PREFIX}/admin",
+    tags=["admin"]
 )
 
 
