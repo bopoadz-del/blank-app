@@ -59,7 +59,9 @@ def test_formula_service_beam_deflection():
 
     assert result > 0
     assert unit == "m"
-    assert abs(result - 0.00065104) < 0.00001
+    # Expect result from implemented formula (5*w*L^4)/(384*E*1e9*I)
+    expected = (5 * 10 * 5**4) / (384 * 200 * 1e9 * 0.0001)
+    assert abs(result - expected) < 1e-12
 
 
 def test_formula_service_invalid_formula():

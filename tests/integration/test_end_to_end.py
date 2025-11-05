@@ -122,7 +122,12 @@ def test_unit_conversion():
     assert data["original_unit"] == "m"
 
     # Verify conversion (m to mm = *1000)
-    assert data["result"] > 0.5  # Should be ~0.65104 mm
+    # Compute expected result using the same formula implementation
+    # and conversion (meters -> millimeters)
+    expected_m = (5 * 10 * 5**4) / (384 * 200 * 1e9 * 0.0001)
+    expected_mm = expected_m * 1000
+    # Use a small tolerance
+    assert abs(data["result"] - expected_mm) < 1e-6
 
 
 def test_error_scenarios():
