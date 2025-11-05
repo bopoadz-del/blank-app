@@ -42,11 +42,10 @@ services:
       - key: MLFLOW_TRACKING_URI
         value: "sqlite:///./mlflow.db"
 
-  # React Frontend
+  # React Frontend (Static sites are always FREE on Render)
   - type: web
     name: ml-platform-frontend
     env: static
-    plan: free
     buildCommand: "cd frontend && npm install && npm run build"
     staticPublishPath: frontend/dist
     headers:
