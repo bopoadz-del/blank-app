@@ -1,0 +1,14 @@
+# Minimal requirements for CI unit tests and linting
+# Keep this small to avoid installing heavy ML libs in matrix jobs
+fastapi==0.115.5
+uvicorn[standard]==0.34.0
+pydantic==2.10.3
+pytest==8.3.4
+pytest-cov==6.0.0
+httpx==0.28.1
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+redis==5.2.1
+# add any small libs tests rely on
+tqdm>=4.62.0
+pyyaml>=6.0
