@@ -1,0 +1,61 @@
+services:
+  # FastAPI Backend
+  - type: web
+    name: ml-platform-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "cd backend && pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "cd backend && chmod +x start.sh && ./start.sh"
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: 7
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: APP_NAME
+        value: "Reasoner AI Platform"
+      - key: APP_VERSION
+        value: "1.0.0"
+      - key: API_V1_PREFIX
+        value: "/api/v1"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8000"
+      - key: DEBUG
+        value: "False"
+      - key: LOG_LEVEL
+        value: "INFO"
+      - key: API_KEY_ENABLED
+        value: "false"
+      - key: MLFLOW_TRACKING_URI
+        value: "sqlite:///./mlflow.db"
+
+  # React Frontend (Static sites are always FREE on Render)
+  - type: web
+    name: ml-platform-frontend
+    env: static
+    buildCommand: "cd frontend && npm install && npm run build"
+    staticPublishPath: frontend/dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+# NOTE: Database (ml-platform-db) already exists in your account
+# You'll need to manually add DATABASE_URL environment variable to backend service
+# after deployment using the connection string from your existing database

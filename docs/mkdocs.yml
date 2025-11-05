@@ -1,0 +1,135 @@
+site_name: The Reasoner AI Platform Documentation
+site_description: Comprehensive documentation for The Reasoner AI Platform
+site_author: The Reasoner Team
+site_url: https://docs.reasoner.ai
+
+repo_name: reasoner-ai/platform
+repo_url: https://github.com/reasoner-ai/platform
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: getting-started/quick-start.md
+    - Installation: getting-started/installation.md
+    - Configuration: getting-started/configuration.md
+    - First Steps: getting-started/first-steps.md
+  - User Guide:
+    - Overview: user-guide/overview.md
+    - Authentication: user-guide/authentication.md
+    - Projects & Conversations: user-guide/projects-conversations.md
+    - File Management: user-guide/file-management.md
+    - Notifications: user-guide/notifications.md
+    - Reports: user-guide/reports.md
+    - Integrations: user-guide/integrations.md
+  - API Reference:
+    - Overview: api/overview.md
+    - Authentication: api/authentication.md
+    - Projects: api/projects.md
+    - Conversations: api/conversations.md
+    - Messages: api/messages.md
+    - Notifications: api/notifications.md
+    - Slack: api/slack.md
+    - Reports: api/reports.md
+    - Formulas: api/formulas.md
+    - Admin: api/admin.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Backend: architecture/backend.md
+    - Frontend: architecture/frontend.md
+    - Database: architecture/database.md
+    - Security: architecture/security.md
+    - Integrations: architecture/integrations.md
+  - Deployment:
+    - Overview: deployment/overview.md
+    - Docker: deployment/docker.md
+    - Kubernetes: deployment/kubernetes.md
+    - CI/CD: deployment/cicd.md
+    - Environment Variables: deployment/environment.md
+    - Monitoring: deployment/monitoring.md
+    - Scaling: deployment/scaling.md
+  - Development:
+    - Setup: development/setup.md
+    - Code Style: development/code-style.md
+    - Testing: development/testing.md
+    - Load Testing: development/load-testing.md
+    - Contributing: development/contributing.md
+  - Security:
+    - Overview: security/overview.md
+    - Authentication & Authorization: security/auth.md
+    - Rate Limiting: security/rate-limiting.md
+    - Input Validation: security/input-validation.md
+    - Best Practices: security/best-practices.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/reasoner-ai
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/reasoner_ai
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/company/reasoner-ai
+  version:
+    provider: mike

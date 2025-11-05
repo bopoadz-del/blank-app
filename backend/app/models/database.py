@@ -25,6 +25,17 @@ class FormulaStatus(str, enum.Enum):
     FAILED = "failed"
 
 
+class FormulaTier(int, enum.Enum):
+    """
+    Formula tier in the certification system.
+    Tier 4 (experimental) -> Tier 3 -> Tier 2 -> Tier 1 (certified for production)
+    """
+    TIER_1_CERTIFIED = 1      # Certified for production use
+    TIER_2_VALIDATED = 2      # Validated, pending certification
+    TIER_3_TESTING = 3        # In testing phase
+    TIER_4_EXPERIMENTAL = 4   # Experimental, not for production
+
+
 class ExecutionStatus(str, enum.Enum):
     """Execution status."""
     QUEUED = "queued"
@@ -68,10 +79,11 @@ class Formula(Base):
     version = Column(String(20), default="1.0.0")
     status = Column(Enum(FormulaStatus), default=FormulaStatus.PENDING_REVIEW)
     
-    # Credibility tier (tier_1 to tier_5)
-    credibility_tier = Column(String(50), default="tier_5_sandbox_only")
+    # Credibility tier (Tier 4 to Tier 1)
+    tier = Column(Enum(FormulaTier), default=FormulaTier.TIER_4_EXPERIMENTAL, nullable=False)
     tier_updated_at = Column(DateTime)
     tier_change_reason = Column(Text)
+    is_locked = Column(Boolean, default=False)  # Locked after Tier 1 certification
     
     # Learning metrics
     confidence_score = Column(Float, default=0.5)
@@ -92,6 +104,7 @@ class Formula(Base):
     # Relationships
     executions = relationship("FormulaExecution", back_populates="formula")
     context_performances = relationship("ContextPerformance", back_populates="formula")
+    certifications = relationship("FormulaCertification", back_populates="formula")
     
     __table_args__ = (
         Index("idx_formula_domain_status", "domain", "status"),
@@ -124,14 +137,17 @@ class FormulaExecution(Base):
     
     # Environment
     edge_node_id = Column(String(100))
+    edge_device_id = Column(Integer, ForeignKey("edge_devices.id"), nullable=True, index=True)  # Link to registered edge device
     executed_by = Column(String(100))
     execution_timestamp = Column(DateTime, default=datetime.utcnow, index=True)
-    
+
     # MLflow tracking
     mlflow_run_id = Column(String(100))
-    
+
     # Relationships
     formula = relationship("Formula", back_populates="executions")
+    corrections = relationship("Correction", back_populates="execution")
+    edge_device = relationship("EdgeDevice", back_populates="executions", foreign_keys="FormulaExecution.edge_device_id")
     
     __table_args__ = (
         Index("idx_execution_formula_status", "formula_id", "status"),

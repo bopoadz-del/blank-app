@@ -178,3 +178,7 @@ cython_debug/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Frontend
+frontend/node_modules/
+frontend/dist/

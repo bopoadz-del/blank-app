@@ -1,0 +1,21 @@
+[Unit]
+Description=Jetson ML Platform Client
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/jetson-client/src
+ExecStart=/usr/bin/python3 /opt/jetson-client/src/jetson_client.py /etc/jetson-client/config.json
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment variables (optional)
+# Environment="BACKEND_URL=http://your-server.com:8000"
+# Environment="API_KEY=your-api-key"
+
+[Install]
+WantedBy=multi-user.target

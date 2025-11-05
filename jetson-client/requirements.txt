@@ -1,0 +1,20 @@
+# Core dependencies
+requests>=2.28.0
+psutil>=5.9.0
+
+# Optional: Jetson-specific utilities (recommended for AGX Orin)
+# Install with: sudo -H pip3 install jetson-stats
+# jetson-stats>=4.2.0
+
+# ML Framework support (install based on your needs)
+# PyTorch is pre-installed on JetPack - use system version
+# torch>=1.13.0
+
+# TensorFlow for Jetson (use NVIDIA's optimized version)
+# Install from: https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html
+
+# ONNX Runtime for GPU acceleration
+# onnxruntime-gpu>=1.14.0
+
+# Additional utilities
+numpy>=1.21.0

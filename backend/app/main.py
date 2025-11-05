@@ -29,6 +29,42 @@ from app.repositories.repositories import (
 )
 import sqlalchemy as sa
 
+# Import new models to create tables
+from app.models.auth import User, RefreshToken
+from app.models.chat import Project, Conversation, Message, FileAttachment
+from app.models.notifications import (
+    Notification,
+    NotificationPreferences,
+    SlackIntegration,
+    Report
+)
+from app.models.corrections import (
+    Correction,
+    AuditLog,
+    FormulaCertification
+)
+from app.models.edge_devices import (
+    EdgeDevice,
+    DeviceHeartbeat,
+    ModelDeployment,
+    DriftMetric,
+    RetrainJob
+)
+from app.models.ethical_layer import (
+    KnowledgeSource,
+    FormulaValidationResult,
+    EthicalOverride,
+    EthicalConfiguration,
+    EthicalAuditLog
+)
+from app.models.safety_layer import (
+    SafetyIncident,
+    SafetyPattern,
+    UserSafetyScore,
+    SafetyConfiguration,
+    EmergencyProtocol
+)
+
 # Create database tables
 database.Base.metadata.create_all(bind=engine)
 
@@ -138,6 +174,106 @@ app.include_router(
     data_context_router,
     prefix=settings.API_V1_PREFIX,
     tags=["data-context"]
+)
+
+# Register authentication routes
+from app.api.auth_routes import router as auth_router
+app.include_router(
+    auth_router,
+    prefix=f"{settings.API_V1_PREFIX}/auth",
+    tags=["authentication"]
+)
+
+# Register chat/conversation/project routes
+from app.api.chat_routes import router as chat_router
+app.include_router(
+    chat_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["chat"]
+)
+
+# Register admin routes
+from app.api.admin_routes import router as admin_router
+app.include_router(
+    admin_router,
+    prefix=f"{settings.API_V1_PREFIX}/admin",
+    tags=["admin"]
+)
+
+# Register notification routes
+from app.api.notification_routes import router as notification_router
+app.include_router(
+    notification_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["notifications"]
+)
+
+# Register Slack integration routes
+from app.api.slack_routes import router as slack_router
+app.include_router(
+    slack_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["slack"]
+)
+
+# Register report generation routes
+from app.api.report_routes import router as report_router
+app.include_router(
+    report_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["reports"]
+)
+
+# Register corrections routes
+from app.api.corrections_routes import router as corrections_router
+app.include_router(
+    corrections_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["corrections"]
+)
+
+# Register certification routes
+from app.api.certification_routes import router as certification_router
+app.include_router(
+    certification_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["certification"]
+)
+
+# Register auditor routes
+from app.api.auditor_routes import router as auditor_router
+app.include_router(
+    auditor_router,
+    prefix=f"{settings.API_V1_PREFIX}/auditor",
+    tags=["auditor"]
+)
+
+# Register edge device routes
+from app.api.edge_device_routes import router as edge_device_router
+app.include_router(
+    edge_device_router,
+    tags=["edge-devices"]
+)
+
+# Register drift detection and retrain routes
+from app.api.drift_routes import router as drift_router
+app.include_router(
+    drift_router,
+    tags=["drift-retrain"]
+)
+
+# Register ethical layer routes
+from app.api.ethical_routes import router as ethical_router
+app.include_router(
+    ethical_router,
+    tags=["ethical-layer"]
+)
+
+# Register safety layer routes
+from app.api.safety_routes import router as safety_router
+app.include_router(
+    safety_router,
+    tags=["safety-layer"]
 )
 
 
