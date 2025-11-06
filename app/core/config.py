@@ -14,7 +14,9 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # Server Configuration
-    HOST: str = "0.0.0.0"
+    # Intentionally bind to all interfaces for containerized deployments.
+    # Bandit B104 flags binding to 0.0.0.0; this is intentional in containers.
+    HOST: str = "0.0.0.0"  # nosec B104 -- container listens on all interfaces intentionally
     PORT: int = 8000
 
     # Security
