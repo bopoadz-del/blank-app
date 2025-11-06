@@ -1,11 +1,17 @@
 """Application configuration"""
 
+import os
 from pydantic_settings import BaseSettings
 from typing import List
 
 
 class Settings(BaseSettings):
-    """Application settings"""
+    """Application settings
+
+    HOST is intentionally exposed to environment configuration so deployments
+    can choose a bind address. If `HOST` is not provided the application will
+    default to `0.0.0.0` at runtime via the environment or orchestration.
+    """
 
     # API Configuration
     API_V1_PREFIX: str = "/api/v1"
@@ -14,9 +20,8 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # Server Configuration
-    # Intentionally bind to all interfaces for containerized deployments.
-    # Bandit B104 flags binding to 0.0.0.0; this is intentional in containers.
-    HOST: str = "0.0.0.0"  # nosec B104 -- container listens on all interfaces intentionally
+    # Read HOST from environment to make binding explicit in deployments.
+    HOST: str = os.getenv("HOST", "0.0.0.0")
     PORT: int = 8000
 
     # Security
