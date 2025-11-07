@@ -9,6 +9,10 @@ services:
     startCommand: "cd backend && chmod +x start.sh && ./start.sh"
     healthCheckPath: /health
     envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ml-platform-db
+          property: connectionString
       - key: SECRET_KEY
         generateValue: true
       - key: ALGORITHM
@@ -44,6 +48,9 @@ services:
     env: static
     buildCommand: "cd frontend && npm install && npm run build"
     staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://ml-platform-backend.onrender.com
     headers:
       - path: /*
         name: X-Frame-Options
@@ -56,6 +63,5 @@ services:
         source: /*
         destination: /index.html
 
-# NOTE: Database (ml-platform-db) already exists in your account
-# You'll need to manually add DATABASE_URL environment variable to backend service
-# after deployment using the connection string from your existing database
+# NOTE: This configuration references your existing database (ml-platform-db)
+# No new database will be created - it will connect to the existing one
