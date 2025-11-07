@@ -8,6 +8,7 @@ import { AdminPanel } from './pages/AdminPanel';
 import AuditorDashboard from './pages/AuditorDashboard';
 import CertificationPanel from './components/CertificationPanel';
 import FormulaExecution from './pages/FormulaExecution';
+import FormulaCatalog from './pages/FormulaCatalog';
 
 const App: React.FC = () => {
   return (
@@ -27,6 +28,14 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <FormulaExecution />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/catalog"
+          element={
+            <ProtectedRoute>
+              <FormulaCatalog />
             </ProtectedRoute>
           }
         />

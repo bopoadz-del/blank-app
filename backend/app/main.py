@@ -276,6 +276,14 @@ app.include_router(
     tags=["safety-layer"]
 )
 
+# Register data ingestion routes
+from app.api.data_ingestion_routes import router as data_ingestion_router
+app.include_router(
+    data_ingestion_router,
+    prefix=f"{settings.API_V1_PREFIX}",
+    tags=["data-ingestion"]
+)
+
 
 # ==================== HEALTH & MONITORING ====================
 

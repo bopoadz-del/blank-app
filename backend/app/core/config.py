@@ -62,10 +62,15 @@ class Settings(BaseSettings):
     # Data Ingestion
     GOOGLE_DRIVE_CREDENTIALS_PATH: Optional[str] = None
     GOOGLE_DRIVE_FOLDER_ID: Optional[str] = None
+    GOOGLE_OAUTH_CLIENT_ID: Optional[str] = None
+    GOOGLE_OAUTH_REDIRECT_URI: Optional[str] = None
     DATA_INGESTION_INTERVAL: int = 3600  # seconds
     SUPPORTED_FILE_TYPES: List[str] = Field(
         default_factory=lambda: [".csv", ".xlsx", ".json", ".pdf", ".docx"]
     )
+
+    # AI Services
+    OPENAI_API_KEY: Optional[str] = None
     
     # Security
     SECRET_KEY: str = "CHANGE-THIS-IN-PRODUCTION-USE-STRONG-SECRET"

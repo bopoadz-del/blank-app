@@ -3,6 +3,14 @@ set -e
 
 echo "🚀 Starting ML Platform Backend..."
 
+# Decode Google Drive credentials if provided
+if [ ! -z "$GOOGLE_DRIVE_CREDENTIALS_BASE64" ]; then
+    echo "🔑 Setting up Google Drive credentials..."
+    echo "$GOOGLE_DRIVE_CREDENTIALS_BASE64" | base64 -d > /tmp/gd_credentials.json
+    export GOOGLE_DRIVE_CREDENTIALS_PATH="/tmp/gd_credentials.json"
+    echo "✅ Google Drive credentials ready"
+fi
+
 # Wait for database to be ready
 echo "⏳ Waiting for database..."
 python3 << END
