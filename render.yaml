@@ -41,6 +41,14 @@ services:
         value: "false"
       - key: MLFLOW_TRACKING_URI
         value: "sqlite:///./mlflow.db"
+      - key: GOOGLE_DRIVE_CREDENTIALS_BASE64
+        value: ""
+      - key: GOOGLE_DRIVE_CREDENTIALS_PATH
+        value: "/tmp/gd_credentials.json"
+      - key: GOOGLE_DRIVE_FOLDER_ID
+        value: ""
+      - key: DATA_INGESTION_INTERVAL
+        value: "3600"
 
   # React Frontend (Static sites are always FREE on Render)
   - type: web

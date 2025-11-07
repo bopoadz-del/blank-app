@@ -36,6 +36,17 @@ loguru==0.7.2
 # Monitoring
 prometheus-client==0.19.0
 
+# Google Drive Integration
+google-api-python-client==2.108.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+
+# File Parsing for Data Ingestion
+PyPDF2==3.0.1
+python-docx==1.1.0
+openpyxl==3.1.2
+pandas==2.1.4
+
 # ============================================================================
 # HEAVY PACKAGES - COMMENTED OUT FOR FREE TIER
 # ============================================================================
