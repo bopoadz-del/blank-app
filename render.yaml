@@ -46,9 +46,15 @@ services:
       - key: GOOGLE_DRIVE_CREDENTIALS_PATH
         value: "/tmp/gd_credentials.json"
       - key: GOOGLE_DRIVE_FOLDER_ID
-        value: ""
+        value: "1MFvAWURZGw-a7X3KKpiAvMxpRIH-tqZQ"
       - key: DATA_INGESTION_INTERVAL
         value: "3600"
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        value: "382554705937-v3s8kpvl7h0em2aekud73fro8rig0cvu.apps.googleusercontent.com"
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        value: "https://ml-platform-backend.onrender.com/drive/callback"
+      - key: OPENAI_API_KEY
+        value: ""
 
   # React Frontend (Static sites are always FREE on Render)
   - type: web
