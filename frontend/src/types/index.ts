@@ -70,3 +70,57 @@ export interface FileAttachment {
   size: number;
   url?: string;
 }
+
+// Formula types
+export interface Formula {
+  id: string;
+  name: string;
+  domain: string;
+  equation: string;
+  description?: string;
+  tier: 1 | 2 | 3 | 4;
+  confidence_score: number;
+  execution_count: number;
+  success_rate: number;
+  status: 'active' | 'testing' | 'deprecated';
+  input_parameters: FormulaParameter[];
+  output_parameters: FormulaParameter[];
+  validation_stages: ValidationStage[];
+  created_at: string;
+  updated_at: string;
+  tags?: string[];
+}
+
+export interface FormulaParameter {
+  name: string;
+  unit: string;
+  type: 'float' | 'int' | 'string' | 'boolean';
+  required: boolean;
+  default_value?: any;
+  description?: string;
+  min_value?: number;
+  max_value?: number;
+}
+
+export interface ValidationStage {
+  stage: string;
+  status: 'passed' | 'failed' | 'pending';
+  message?: string;
+}
+
+export interface FormulaExecutionRequest {
+  formula_id: string;
+  input_values: Record<string, any>;
+  context_data?: Record<string, any>;
+}
+
+export interface FormulaExecutionResult {
+  execution_id: string;
+  formula_id: string;
+  status: 'success' | 'failed' | 'warning';
+  output: any;
+  execution_time_ms: number;
+  validation_results: ValidationStage[];
+  confidence_score?: number;
+  timestamp: string;
+}
