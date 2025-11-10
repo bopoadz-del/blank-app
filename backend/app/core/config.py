@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     
     # Database
     DATABASE_URL: PostgresDsn = Field(
-        default="postgresql+asyncpg://reasoner:reasoner123@localhost:5432/reasoner_db"
+        default="postgresql://reasoner:reasoner123@localhost:5432/reasoner_db"
     )
     DB_POOL_SIZE: int = 20
     DB_MAX_OVERFLOW: int = 10
@@ -75,7 +75,9 @@ class Settings(BaseSettings):
     # Security
     SECRET_KEY: str = "CHANGE-THIS-IN-PRODUCTION-USE-STRONG-SECRET"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ALGORITHM: str = "HS256"
+    CORS_ORIGINS: str = "*"
     
     # Rate Limiting
     RATE_LIMIT_REQUESTS: int = 100
