@@ -20,7 +20,8 @@ RUN apt-get update && \
     apt-get clean
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt .
+# Use backend's minimal requirements for faster builds
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
