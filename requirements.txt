@@ -1,4 +1,13 @@
 # ============================================================================
+# FULL ML PLATFORM REQUIREMENTS - For Local Development & ML Workloads
+# ============================================================================
+# This file contains the complete ML stack including PyTorch, TensorFlow, Ray, etc.
+#
+# For lightweight deployments (Render, Docker, CI/CD), use backend/requirements.txt
+# For GPU-accelerated workloads, use requirements-gpu.txt
+# ============================================================================
+
+# ============================================================================
 # API and Backend Dependencies
 # ============================================================================
 fastapi==0.109.2
