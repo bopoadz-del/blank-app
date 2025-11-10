@@ -79,12 +79,17 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t streamlit-app:latest .
+        docker build -t fastapi-app:latest .
 
     - name: Test Docker image
       run: |
-        docker run -d -p 8501:8501 --name test-app streamlit-app:latest
+        docker run -d -p 8000:8000 --name test-app \
+          -e DATABASE_URL=sqlite:///./test.db \
+          -e SECRET_KEY=test-secret-key \
+          fastapi-app:latest
         sleep 10
         docker logs test-app
+        # Test health endpoint
+        curl -f http://localhost:8000/health || (docker logs test-app && exit 1)
         docker stop test-app
         docker rm test-app
