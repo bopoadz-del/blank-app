@@ -24,48 +24,48 @@ httpx==0.28.1
 # ============================================================================
 
 # Core Scientific Computing
-numpy>=1.21.0,<2.0.0
-scipy>=1.7.0
-pandas>=1.3.0
+numpy==1.26.4  # Compatible with Python 3.11
+scipy==1.11.4
+pandas==2.1.4
 
 # Machine Learning Libraries
-scikit-learn>=1.0.0
-xgboost>=1.5.0
-lightgbm>=3.3.0
-catboost>=1.0.0
+scikit-learn==1.3.2
+xgboost==2.0.3
+lightgbm==4.1.0
+catboost==1.2.2
 
-# Deep Learning - PyTorch
-torch>=1.10.0,<2.3.0
-torchvision>=0.11.0
-torchaudio>=0.10.0
+# Deep Learning - PyTorch (Python 3.11 compatible versions)
+torch==2.1.2
+torchvision==0.16.2
+torchaudio==2.1.2
 
 # Deep Learning - TensorFlow/Keras
-tensorflow>=2.8.0,<3.0.0
+tensorflow==2.15.0
 
 # NLP and Transformers
-transformers>=4.20.0
-tokenizers>=0.13.0
-sentencepiece>=0.1.96
+transformers==4.35.2
+tokenizers==0.15.0
+sentencepiece==0.1.99
 
 # Computer Vision
-opencv-python>=4.5.0
-Pillow>=9.0.0
-albumentations>=1.3.0
+opencv-python==4.8.1.78
+Pillow==10.1.0
+albumentations==1.3.1
 
 # Hyperparameter Optimization
-optuna>=3.0.0
-ray[tune]>=2.0.0
-ray[default]>=2.0.0
+optuna==3.4.0
+ray[tune]==2.8.1
+ray[default]==2.8.1
 
 # Model Serving
-onnx>=1.12.0
-onnxruntime>=1.12.0
-joblib>=1.1.0
+onnx==1.15.0
+onnxruntime==1.16.3
+joblib==1.3.2
 
 # Visualization
-matplotlib>=3.5.0
-seaborn>=0.11.0
+matplotlib==3.8.2
+seaborn==0.13.0
 
 # Utilities
-tqdm>=4.62.0
-pyyaml>=6.0
+tqdm==4.66.1
+pyyaml==6.0.1
