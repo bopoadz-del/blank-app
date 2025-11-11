@@ -90,6 +90,10 @@ class RateLimiter:
                 self._fallback_enabled = True
 
         # Fallback in-memory rate limiting
+<<<<<< codex/fix-failed-ci-and-security-scan-workflows-on5wm5
+=======
+<<<<<codex/fix-failed-ci-and-security-scan-workflows-xj83mk
+>>>>>> main
         if self._fallback_enabled:
             bucket = self._fallback_buckets[key]
             while bucket and bucket[0] <= current_time - window:
@@ -104,6 +108,23 @@ class RateLimiter:
             bucket.append(current_time)
             return True
 
+<<<<<
+< codex/fix-failed-ci-and-security-scan-workflows-on5wm5
+=======
+=======
+        bucket = self._fallback_buckets[key]
+        while bucket and bucket[0] <= current_time - window:
+            bucket.popleft()
+
+        if len(bucket) >= settings.RATE_LIMIT_PER_MINUTE:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Rate limit exceeded. Maximum {settings.RATE_LIMIT_PER_MINUTE} requests per minute."
+            )
+
+        bucket.append(current_time)
+>>>>> main
+>>>>>> main
         return True
 
 
