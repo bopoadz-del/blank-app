@@ -217,7 +217,8 @@ reasoner-platform/
 cd frontend
 npm install
 npm run dev
-# Runs on http://localhost:5173
+# Runs on http://localhost:3000
+# Now accessible on all network interfaces (0.0.0.0:3000)
 ```
 
 #### Backend:
@@ -543,6 +544,53 @@ We welcome contributions! Here's how:
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🔧 Troubleshooting
+
+### UI Not Visible?
+
+If you can't see the UI when running locally:
+
+1. **Check the frontend server is running**:
+   ```bash
+   # Should show "VITE ready" message
+   cd frontend && npm run dev
+   ```
+
+2. **Verify the correct URL**:
+   - Frontend runs on: `http://localhost:3000` (not 5173)
+   - Backend runs on: `http://localhost:8000`
+
+3. **Access from external network**:
+   - The dev server now listens on `0.0.0.0:3000` (all network interfaces)
+   - You can access it from other devices on your network using your machine's IP
+   - Example: `http://192.168.1.100:3000` or `http://10.1.0.159:3000`
+
+4. **Check browser console** for errors (F12 → Console tab)
+
+5. **Verify dependencies installed**:
+   ```bash
+   cd frontend && npm install
+   ```
+
+### Backend Connection Issues?
+
+If the UI loads but can't connect to backend:
+
+1. **Start the backend server**:
+   ```bash
+   cd backend && uvicorn app.main:app --reload
+   ```
+
+2. **Check environment variables**:
+   ```bash
+   # In frontend/.env
+   VITE_API_URL=http://localhost:8000
+   ```
+
+3. **Verify backend is running**: Visit `http://localhost:8000/docs`
 
 ---
 
