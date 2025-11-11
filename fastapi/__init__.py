@@ -1,3 +1,4 @@
+<<<<<< codex/fix-failed-ci-and-security-scan-workflows-1yqgdg
 """Fallback FastAPI loader.
 
 The offline test environment for this project does not have FastAPI available,
@@ -59,3 +60,18 @@ sys.modules[__name__] = _module
 globals().update({name: getattr(_module, name) for name in dir(_module)})
 __all__ = getattr(_module, "__all__", [])
 
+=======
+"""Lightweight FastAPI-compatible stubs for offline testing."""
+from .app import FastAPI, APIRouter, Depends, Security, HTTPException, Request
+from .status import status
+
+__all__ = [
+    "FastAPI",
+    "APIRouter",
+    "Depends",
+    "Security",
+    "HTTPException",
+    "Request",
+    "status",
+]
+>>>>>> main

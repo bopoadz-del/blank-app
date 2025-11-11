@@ -1,3 +1,4 @@
+<<<<<< codex/fix-failed-ci-and-security-scan-workflows-1yqgdg
 """Expose the real pydantic-settings package when available, otherwise use the shim."""
 
 import importlib
@@ -37,3 +38,20 @@ sys.modules[__name__] = _module
 globals().update({name: getattr(_module, name) for name in dir(_module)})
 __all__ = getattr(_module, "__all__", [])
 
+=======
+"""Minimal subset of pydantic-settings for tests."""
+from __future__ import annotations
+
+from typing import Any
+
+from pydantic import BaseModel
+
+
+class BaseSettings(BaseModel):
+    class Config:
+        env_file = None
+        case_sensitive = False
+
+    def __init__(self, **values: Any):
+        super().__init__(**values)
+>>>>>> main
