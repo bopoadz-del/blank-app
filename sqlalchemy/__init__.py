@@ -1,4 +1,4 @@
-<<<<< codex/fix-failed-ci-and-security-scan-workflows-zu1wmc
+"""Proxy module that prefers the real SQLAlchemy package when available."""
 """Proxy module that prefers the real SQLAlchemy package when available."""
 from __future__ import annotations
 
@@ -67,7 +67,7 @@ else:
 
 del _import_real
 del _load_stub
-=======
+
 """Lightweight SQLAlchemy stubs for offline tests."""
 from __future__ import annotations
 
@@ -169,4 +169,4 @@ __all__ = [
     "sessionmaker",
     "OperationalError",
 ]
->>>>> main
+
