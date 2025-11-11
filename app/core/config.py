@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     PORT: int = 8000
 
     # Security
-    SECRET_KEY: str = "your-secret-key-change-this-in-production"
-    API_KEY: str = "your-api-key-change-this-in-production"
+    SECRET_KEY: str = "dev-secret-key"
+    API_KEY: str = "test-api-key-12345"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
