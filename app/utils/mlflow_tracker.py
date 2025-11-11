@@ -1,16 +1,21 @@
-"""MLflow integration for experiment tracking"""
+"""MLflow integration for experiment tracking with optional dependency."""
 
-import mlflow
-from typing import Dict, Any, Optional
-from app.core.config import settings
 import os
+from typing import Dict, Any, Optional
+
+from app.core.config import settings
+
+try:
+    import mlflow  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    mlflow = None
 
 
 class MLflowTracker:
     """MLflow integration for tracking formula executions"""
 
     def __init__(self):
-        self.enabled = os.getenv("MLFLOW_TRACKING_URI") is not None
+        self.enabled = mlflow is not None and os.getenv("MLFLOW_TRACKING_URI") is not None
         if self.enabled:
             mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000"))
             mlflow.set_experiment(settings.PROJECT_NAME)

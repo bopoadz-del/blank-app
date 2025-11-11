@@ -1,33 +1,71 @@
-"""Unit conversion utilities using Pint"""
+"""Unit conversion utilities without external dependencies."""
 
-from pint import UnitRegistry
-from typing import Tuple, Optional
+from typing import Tuple
 
-# Initialize unit registry
-ureg = UnitRegistry()
+
+class _UnitGroup:
+    """Helper structure for linear unit conversions."""
+
+    def __init__(self, base_unit: str, factors: dict[str, float]):
+        self.base_unit = base_unit
+        self.factors = factors
+
+    def to_base(self, value: float, unit: str) -> float:
+        if unit not in self.factors:
+            raise ValueError(f"Unknown source unit: {unit}")
+        return value * self.factors[unit]
+
+    def from_base(self, value: float, unit: str) -> float:
+        if unit not in self.factors:
+            raise ValueError(f"Unknown target unit: {unit}")
+        return value / self.factors[unit]
 
 
 class UnitConverter:
     """Handle unit conversions for formula results"""
 
     # Supported unit conversions
-    UNIT_MAPPINGS = {
-        "m": ureg.meter,
-        "mm": ureg.millimeter,
-        "cm": ureg.centimeter,
-        "in": ureg.inch,
-        "ft": ureg.foot,
-        "Pa": ureg.pascal,
-        "MPa": ureg.megapascal,
-        "GPa": ureg.gigapascal,
-        "psi": ureg.psi,
-        "ksi": ureg.ksi,
-        "N": ureg.newton,
-        "kN": ureg.kilonewton,
-        "lb": ureg.pound_force,
-        "m/s": ureg.meter / ureg.second,
-        "ft/s": ureg.foot / ureg.second,
-        "dimensionless": ureg.dimensionless,
+    _LENGTH = _UnitGroup("m", {
+        "m": 1.0,
+        "mm": 0.001,
+        "cm": 0.01,
+        "in": 0.0254,
+        "ft": 0.3048,
+    })
+    _PRESSURE = _UnitGroup("Pa", {
+        "Pa": 1.0,
+        "MPa": 1_000_000.0,
+        "GPa": 1_000_000_000.0,
+        "psi": 6_894.757293168361,
+        "ksi": 6_894_757.293168361,
+    })
+    _FORCE = _UnitGroup("N", {
+        "N": 1.0,
+        "kN": 1_000.0,
+        "lb": 4.4482216152605,
+    })
+    _VELOCITY = _UnitGroup("m/s", {
+        "m/s": 1.0,
+        "ft/s": 0.3048,
+    })
+
+    UNIT_GROUPS = {
+        "m": _LENGTH,
+        "mm": _LENGTH,
+        "cm": _LENGTH,
+        "in": _LENGTH,
+        "ft": _LENGTH,
+        "Pa": _PRESSURE,
+        "MPa": _PRESSURE,
+        "GPa": _PRESSURE,
+        "psi": _PRESSURE,
+        "ksi": _PRESSURE,
+        "N": _FORCE,
+        "kN": _FORCE,
+        "lb": _FORCE,
+        "m/s": _VELOCITY,
+        "ft/s": _VELOCITY,
+        "dimensionless": None,
     }
 
     @classmethod
@@ -55,22 +93,19 @@ class UnitConverter:
                 raise ValueError("Cannot convert dimensionless to/from other units")
             return value, "dimensionless"
 
-        # Get pint units
-        from_pint = cls.UNIT_MAPPINGS.get(from_unit)
-        to_pint = cls.UNIT_MAPPINGS.get(to_unit)
+        from_group = cls.UNIT_GROUPS.get(from_unit)
+        to_group = cls.UNIT_GROUPS.get(to_unit)
 
-        if from_pint is None:
+        if from_group is None:
             raise ValueError(f"Unknown source unit: {from_unit}")
-        if to_pint is None:
+        if to_group is None:
             raise ValueError(f"Unknown target unit: {to_unit}")
+        if from_group is not to_group:
+            raise ValueError(f"Incompatible units: cannot convert {from_unit} to {to_unit}")
 
-        try:
-            # Create quantity and convert
-            quantity = value * from_pint
-            converted = quantity.to(to_pint)
-            return converted.magnitude, to_unit
-        except Exception as e:
-            raise ValueError(f"Incompatible units: cannot convert {from_unit} to {to_unit}: {str(e)}")
+        base_value = from_group.to_base(value, from_unit)
+        converted_value = to_group.from_base(base_value, to_unit)
+        return converted_value, to_unit
 
     @classmethod
     def is_compatible(cls, unit1: str, unit2: str) -> bool:
@@ -93,7 +128,7 @@ class UnitConverter:
         try:
             cls.convert(1.0, unit1, unit2)
             return True
-        except (ValueError, Exception):
+        except ValueError:
             return False
 
     @classmethod
@@ -104,7 +139,7 @@ class UnitConverter:
         Returns:
             List of unit strings
         """
-        return list(cls.UNIT_MAPPINGS.keys())
+        return list(cls.UNIT_GROUPS.keys())
 
 
 unit_converter = UnitConverter()
