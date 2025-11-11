@@ -27,7 +27,7 @@ class TestClient:
         try:
             self._loop.run_until_complete(self.app._exit_lifespan())
         except Exception:
-            pass
+            logging.exception("Exception occurred during app lifespan shutdown in TestClient.")
         finally:
             self._loop.close()
 
