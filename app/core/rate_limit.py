@@ -88,7 +88,6 @@ class RateLimiter:
             # Redis server is unavailable – fall back to in-memory rate limiting
             self.redis_client = None
             self._fallback_enabled = True
- main
 
     async def close_redis(self):
         """Close Redis connection"""
