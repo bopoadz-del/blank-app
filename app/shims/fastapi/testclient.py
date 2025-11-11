@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 from typing import Any, Dict, Optional
-
+import logging
 from .app import FastAPI, Response
 
 
@@ -19,8 +19,8 @@ class TestClient:
     def _enter_lifespan(self) -> None:
         try:
             self._loop.run_until_complete(self.app._enter_lifespan())
-        except Exception:
-            pass
+        except Exception as exc:
+            logging.error("Exception occurred during TestClient._enter_lifespan: %s", exc, exc_info=True)
 
     def _exit_lifespan(self) -> None:
         try:
