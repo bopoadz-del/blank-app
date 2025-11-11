@@ -27,7 +27,7 @@ jobs:
     - name: Run pip-audit
       run: |
         pip install pip-audit
-        pip-audit -r requirements.txt --format json > pip-audit-report.json || true
+        pip-audit -r backend/requirements.txt --format json > pip-audit-report.json || true
 
     - name: Upload pip-audit report
       uses: actions/upload-artifact@v4
@@ -61,6 +61,7 @@ jobs:
 
     - name: Run Safety check
       run: |
+        pip install -r backend/requirements.txt
         safety check --json > safety-report.json || true
         safety check || true
 
@@ -104,12 +105,12 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build Docker image
-      run: docker build -t formula-api:test .
+      run: docker build -t fastapi-app:test .
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'formula-api:test'
+        image-ref: 'fastapi-app:test'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
@@ -121,7 +122,7 @@ jobs:
     - name: Run Trivy JSON report
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'formula-api:test'
+        image-ref: 'fastapi-app:test'
         format: 'json'
         output: 'trivy-report.json'
 
