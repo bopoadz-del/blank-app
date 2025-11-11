@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 from typing import Any, Dict, Optional
-
+import logging
 from .app import FastAPI, Response
 
 
@@ -26,7 +26,8 @@ class TestClient:
         try:
             self._loop.run_until_complete(self.app._exit_lifespan())
         except Exception:
-            pass
+            # Best effort cleanup during finalizer; log but suppress exceptions
+            logging.exception("Exception occurred during TestClient._exit_lifespan")
         finally:
             self._loop.close()
 
