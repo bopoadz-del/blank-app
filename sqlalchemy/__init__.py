@@ -1,4 +1,3 @@
-<<<<<< codex/fix-failed-ci-and-security-scan-workflows-1yqgdg
 """Compatibility loader for SQLAlchemy.
 
 Searches for an installed SQLAlchemy distribution outside of the project root
@@ -56,14 +55,6 @@ if _module is None:
 sys.modules[__name__] = _module
 globals().update({name: getattr(_module, name) for name in dir(_module)})
 __all__ = getattr(_module, "__all__", [])
-
-=======
-"""Lightweight SQLAlchemy stubs for offline tests."""
-from __future__ import annotations
-
-from datetime import datetime
-from typing import Any
-
 
 class OperationalError(Exception):
     pass
