@@ -1,3 +1,4 @@
+<<<<< codex/fix-failed-ci-and-security-scan-workflows-zu1wmc
 """Proxy module that prefers the real FastAPI package when available."""
 from __future__ import annotations
 
@@ -67,3 +68,18 @@ else:
 
 del _import_real
 del _load_stub
+=======
+"""Lightweight FastAPI-compatible stubs for offline testing."""
+from .app import FastAPI, APIRouter, Depends, Security, HTTPException, Request
+from .status import status
+
+__all__ = [
+    "FastAPI",
+    "APIRouter",
+    "Depends",
+    "Security",
+    "HTTPException",
+    "Request",
+    "status",
+]
+>>>>> main
