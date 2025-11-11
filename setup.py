@@ -73,7 +73,19 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yourusername/ml-framework",
-    packages=find_packages(exclude=["tests", "docs", "examples"]),
+    packages=find_packages(
+        exclude=[
+            "tests",
+            "docs",
+            "examples",
+            "fastapi",
+            "fastapi.*",
+            "sqlalchemy",
+            "sqlalchemy.*",
+            "pydantic_settings",
+            "pydantic_settings.*",
+        ]
+    ),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
