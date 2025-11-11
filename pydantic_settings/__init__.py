@@ -1,4 +1,3 @@
-<<<<< codex/fix-failed-ci-and-security-scan-workflows-zu1wmc
 """Proxy module that prefers the real pydantic-settings package when available."""
 from __future__ import annotations
 
@@ -67,20 +66,3 @@ else:
 
 del _import_real
 del _load_stub
-=======
-"""Minimal subset of pydantic-settings for tests."""
-from __future__ import annotations
-
-from typing import Any
-
-from pydantic import BaseModel
-
-
-class BaseSettings(BaseModel):
-    class Config:
-        env_file = None
-        case_sensitive = False
-
-    def __init__(self, **values: Any):
-        super().__init__(**values)
->>>>> main
