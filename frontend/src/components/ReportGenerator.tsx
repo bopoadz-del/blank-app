@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Download, Trash2, X, FileSpreadsheet, FilePdf, FileType } from 'lucide-react';
+import { FileText, Download, Trash2, X, FileSpreadsheet, FileType } from 'lucide-react';
 import api from '../services/api';
 import { toast } from 'sonner';
 
@@ -135,7 +135,7 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({
   const getFormatIcon = (format: string) => {
     switch (format) {
       case 'pdf':
-        return <FilePdf className="h-5 w-5 text-red-500" />;
+        return <FileText className="h-5 w-5 text-red-500" />;
       case 'excel':
         return <FileSpreadsheet className="h-5 w-5 text-green-500" />;
       case 'csv':
@@ -146,7 +146,7 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({
   };
 
   const formatTypes = [
-    { value: 'pdf', label: 'PDF Document', icon: FilePdf, color: 'text-red-600' },
+    { value: 'pdf', label: 'PDF Document', icon: FileText, color: 'text-red-600' },
     { value: 'excel', label: 'Excel Spreadsheet', icon: FileSpreadsheet, color: 'text-green-600' },
     { value: 'csv', label: 'CSV File', icon: FileType, color: 'text-blue-600' }
   ];

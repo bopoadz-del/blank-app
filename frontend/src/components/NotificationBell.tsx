@@ -120,18 +120,6 @@ const NotificationBell: React.FC = () => {
     return icons[type] || '📧';
   };
 
-  const getNotificationColor = (type: string) => {
-    const colors: Record<string, string> = {
-      info: 'bg-blue-50 border-blue-200',
-      success: 'bg-green-50 border-green-200',
-      warning: 'bg-yellow-50 border-yellow-200',
-      error: 'bg-red-50 border-red-200',
-      message: 'bg-purple-50 border-purple-200',
-      system: 'bg-gray-50 border-gray-200'
-    };
-    return colors[type] || 'bg-gray-50 border-gray-200';
-  };
-
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();

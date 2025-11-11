@@ -21,11 +21,16 @@ interface Formula {
 
 interface FormulaExecution {
   id: number;
+  execution_id: string;
   formula_id: number;
+  formula_name?: string;
+  tier?: number;
   input_values: any;
   output_values: any;
   status: string;
-  created_at: string;
+  execution_time?: number;
+  execution_timestamp: string;
+  created_at?: string;
   execution_time_ms?: number;
 }
 

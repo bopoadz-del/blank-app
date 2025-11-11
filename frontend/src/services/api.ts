@@ -61,6 +61,27 @@ class ApiService {
     );
   }
 
+  // Generic HTTP methods for flexibility
+  get(url: string, config?: any) {
+    return this.client.get(url, config);
+  }
+
+  post(url: string, data?: any, config?: any) {
+    return this.client.post(url, data, config);
+  }
+
+  patch(url: string, data?: any, config?: any) {
+    return this.client.patch(url, data, config);
+  }
+
+  put(url: string, data?: any, config?: any) {
+    return this.client.put(url, data, config);
+  }
+
+  delete(url: string, config?: any) {
+    return this.client.delete(url, config);
+  }
+
   // Auth endpoints
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const { data } = await this.client.post('/api/auth/login', credentials);
@@ -239,7 +260,7 @@ class ApiService {
 
   // Formula execution endpoints
   async executeFormula(formulaData: {
-    formula_id: string;
+    formula_id: string | number;
     input_values: any;
     context_data?: any;
   }) {
@@ -264,3 +285,4 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+export default apiService;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TierBadge } from './TierBadge';
-import type { Formula, FormulaExecutionRequest } from '../types';
+import type { Formula } from '../types';
 
 interface DeploymentWizardProps {
   formula: Formula | null;

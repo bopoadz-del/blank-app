@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Eye, TrendingUp, Clock, CheckCircle, XCircle, AlertTriangle,
-  FileText, Activity, Search, Filter, Calendar, Shield
+  Eye, Clock, CheckCircle, XCircle,
+  FileText, Activity, Filter, Calendar, Shield
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import { toast } from 'sonner';
@@ -33,7 +33,6 @@ const AuditorDashboard: React.FC = () => {
   const [timeline, setTimeline] = useState<any>(null);
   const [tierDistribution, setTierDistribution] = useState<any>(null);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
-  const [selectedLog, setSelectedLog] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState(30);
   const [filterAction, setFilterAction] = useState('');
@@ -76,16 +75,6 @@ const AuditorDashboard: React.FC = () => {
       setAuditLogs(logsData);
     } catch (error) {
       toast.error('Failed to filter audit logs');
-    }
-  };
-
-  const viewExecutionTrail = async (executionId: number) => {
-    try {
-      const trail = await apiService.getExecutionTrail(executionId);
-      setSelectedLog(trail);
-      toast.success('Execution trail loaded');
-    } catch (error) {
-      toast.error('Failed to load execution trail');
     }
   };
 
