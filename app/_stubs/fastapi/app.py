@@ -5,7 +5,7 @@ import asyncio
 import inspect
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
-
+import logging
 from pydantic import BaseModel
 
 from .status import status
@@ -241,7 +241,7 @@ class FastAPI:
                 try:
                     generator.close()
                 except Exception:
-                    pass
+                    logging.exception("Exception occurred during generator cleanup (generator.close()).")
 
             return value, _cleanup
 
