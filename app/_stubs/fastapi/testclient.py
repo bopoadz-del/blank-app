@@ -20,7 +20,7 @@ class TestClient:
         try:
             self._loop.run_until_complete(self.app._enter_lifespan())
         except Exception:
-            pass
+            logging.exception("Exception occurred during TestClient._enter_lifespan")
 
     def _exit_lifespan(self) -> None:
         try:
