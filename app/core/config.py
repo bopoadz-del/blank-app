@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     PORT: int = 8000
 
     # Security
-    SECRET_KEY: str = "your-secret-key-change-this-in-production"
-    API_KEY: str = "your-api-key-change-this-in-production"
+    SECRET_KEY: str = "dev-secret-key"
+    API_KEY: str = "test-api-key-12345"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: str = ""
 
     # Rate Limiting
-    RATE_LIMIT_PER_MINUTE: int = 10
+    RATE_LIMIT_PER_MINUTE: int = 60
     RATE_LIMIT_BURST: int = 5
 
     # CORS
