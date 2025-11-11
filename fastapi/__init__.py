@@ -59,3 +59,16 @@ sys.modules[__name__] = _module
 globals().update({name: getattr(_module, name) for name in dir(_module)})
 __all__ = getattr(_module, "__all__", [])
 
+"""Lightweight FastAPI-compatible stubs for offline testing."""
+from .app import FastAPI, APIRouter, Depends, Security, HTTPException, Request
+from .status import status
+
+__all__ = [
+    "FastAPI",
+    "APIRouter",
+    "Depends",
+    "Security",
+    "HTTPException",
+    "Request",
+    "status",
+]

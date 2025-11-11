@@ -1,7 +1,11 @@
 """Rate limiting middleware using Redis with graceful fallback."""
 
 from collections import defaultdict, deque
+<<codex/fix-failed-ci-and-security-scan-workflows-u2o0p5
 from typing import Any, Deque, DefaultDict, Dict, Optional
+
+from typing import Deque, DefaultDict, Optional
+main
 import time
 
 from fastapi import HTTPException, status, Request
@@ -12,6 +16,7 @@ try:
     import redis.asyncio as redis  # type: ignore
 except ModuleNotFoundError:  # pragma: no cover - handled by fallback
     redis = None
+codex/fix-failed-ci-and-security-scan-workflows-u2o0p5
 
 
 class _InMemoryRedisClient:
@@ -40,20 +45,30 @@ class _InMemoryRedisClient:
     async def close(self) -> None:
         self._store.clear()
 
+main
+
 
 class RateLimiter:
     """Rate limiter using Redis for distributed rate limiting"""
 
     def __init__(self):
+ codex/fix-failed-ci-and-security-scan-workflows-u2o0p5
         self.redis_client: Optional[Any] = None
+
+        self.redis_client: Optional["redis.Redis"] = None
+main
         self._fallback_buckets: DefaultDict[str, Deque[int]] = defaultdict(deque)
         self._fallback_enabled = False
 
     async def init_redis(self):
         """Initialize Redis connection"""
         if redis is None:
+codex/fix-failed-ci-and-security-scan-workflows-u2o0p5
             self.redis_client = _InMemoryRedisClient()
             self._fallback_enabled = False
+
+            self._fallback_enabled = True
+main
             return
 
         try:
@@ -65,9 +80,15 @@ class RateLimiter:
             )
             self._fallback_enabled = False
         except Exception:
+codex/fix-failed-ci-and-security-scan-workflows-u2o0p5
             # Redis server is unavailable – fall back to in-memory compatibility client
             self.redis_client = _InMemoryRedisClient()
             self._fallback_enabled = False
+
+            # Redis server is unavailable – fall back to in-memory rate limiting
+            self.redis_client = None
+            self._fallback_enabled = True
+ main
 
     async def close_redis(self):
         """Close Redis connection"""
@@ -118,6 +139,7 @@ class RateLimiter:
                 self._fallback_enabled = True
 
         # Fallback in-memory rate limiting
+codex/fix-failed-ci-and-security-scan-workflows-u2o0p5
         if self._fallback_enabled:
             bucket = self._fallback_buckets[key]
             # drop timestamps outside the current window
@@ -132,11 +154,35 @@ class RateLimiter:
                         f"Rate limit exceeded. Maximum "
                         f"{settings.RATE_LIMIT_PER_MINUTE} requests per minute."
                     ),
+
+codex/fix-failed-ci-and-security-scan-workflows-xj83mk
+        if self._fallback_enabled:
+            bucket = self._fallback_buckets[key]
+            while bucket and bucket[0] <= current_time - window:
+                bucket.popleft()
+
+            if len(bucket) >= settings.RATE_LIMIT_PER_MINUTE * 10:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=f"Rate limit exceeded. Maximum {settings.RATE_LIMIT_PER_MINUTE} requests per minute."
+main
                 )
 
             bucket.append(current_time)
             return True
 
+        bucket = self._fallback_buckets[key]
+        while bucket and bucket[0] <= current_time - window:
+            bucket.popleft()
+
+        if len(bucket) >= settings.RATE_LIMIT_PER_MINUTE:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Rate limit exceeded. Maximum {settings.RATE_LIMIT_PER_MINUTE} requests per minute."
+            )
+
+        bucket.append(current_time)
+>>>>> main
         return True
 
 
