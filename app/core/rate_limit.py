@@ -153,8 +153,8 @@ class RateLimiter:
                     detail=(
                         f"Rate limit exceeded. Maximum "
                         f"{settings.RATE_LIMIT_PER_MINUTE} requests per minute."
-                    ),
-
+                    )
+                )
 
         if self._fallback_enabled:
             bucket = self._fallback_buckets[key]
