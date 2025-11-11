@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import Any
+import logging
 
 
 class _Metadata:
@@ -15,7 +16,7 @@ class _Metadata:
             Session._store.clear()
             Session._id_counter.clear()
         except Exception:
-            pass
+            logging.exception("Error clearing session store or id_counter in _Metadata.drop_all")
 
 
 def declarative_base() -> type:
