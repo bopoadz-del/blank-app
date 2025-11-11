@@ -35,15 +35,15 @@ class _StubModuleFinder(importlib.abc.MetaPathFinder):
         return None
 
 
-_finder: Optional[_StubModuleFinder] = None
+_unused_finder: Optional[_StubModuleFinder] = None
 
 
 def install_shims() -> None:
     """Attach the stub finder to ``sys.meta_path`` once per interpreter."""
 
-    global _finder
+    global _unused_finder
 
-    if _finder is not None:
+    if _unused_finder is not None:
         return
 
     stub_root = Path(__file__).resolve().parent / "_stubs"
@@ -52,7 +52,7 @@ def install_shims() -> None:
 
     finder = _StubModuleFinder(stub_root)
     sys.meta_path.append(finder)
-    _finder = finder
+    _unused_finder = finder
 
 
 __all__ = ["install_shims"]
