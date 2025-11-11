@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, Save, Trash2, TestTube, Power, ExternalLink, Check, X } from 'lucide-react';
+import { MessageSquare, Save, Trash2, TestTube, ExternalLink, Check } from 'lucide-react';
 import api from '../services/api';
 import { toast } from 'sonner';
 

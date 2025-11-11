@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FormulaCard, FormulaCardSkeleton } from '../components/FormulaCard';
 import { TierFilter } from '../components/TierBadge';
 import { DeploymentWizard, DeploymentConfig } from '../components/DeploymentWizard';
