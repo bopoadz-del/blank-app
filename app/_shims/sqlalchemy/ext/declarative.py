@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from typing import Any
-
+import logging
 
 class _Metadata:
     def create_all(self, bind: Any = None) -> None:  # pragma: no cover - metadata operations are no-ops
@@ -14,8 +14,8 @@ class _Metadata:
 
             Session._store.clear()
             Session._id_counter.clear()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.exception("Ignored exception in _Metadata.drop_all() (stub no-op):")
 
 
 def declarative_base() -> type:
