@@ -3,27 +3,10 @@ from __future__ import annotations
 
 import asyncio
 import inspect
-import logging
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 
 from pydantic import BaseModel
-from importlib.util import find_spec
-from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
-
-if find_spec("pydantic") is not None:  # pragma: no cover - exercised when dependency is available
-    from pydantic import BaseModel
-else:  # pragma: no cover - executed in minimal test environment
-    class BaseModel:  # type: ignore[too-few-public-methods]
-        """Lightweight stand-in implementing the subset used by the tests."""
-
-        def __init__(self, **data: Any) -> None:
-            for key, value in data.items():
-                setattr(self, key, value)
-
-        def model_dump(self) -> Dict[str, Any]:
-            return self.__dict__.copy()
 
 from .status import status
 
@@ -122,7 +105,7 @@ class APIRouter:
 class FastAPI:
     """Tiny FastAPI replacement supporting the repository's tests."""
 
-    def __init__(self, title: str = "FastAPI", version: str = "0.1.0", description: Optional[str] = None, lifespan: Optional[Callable[["FastAPI"], Awaitable[Any]]] = None):
+    def __init__(self, title: str = "FastAPI", version: str = "0.1.0", description: str | None = None, lifespan: Optional[Callable[["FastAPI"], Awaitable[Any]]] = None):
         self.title = title
         self.version = version
         self.description = description
@@ -258,9 +241,7 @@ class FastAPI:
                 try:
                     generator.close()
                 except Exception:
-                    logging.exception(
-                        "Exception occurred while closing generator dependency"
-                    )
+                    pass
 
             return value, _cleanup
 

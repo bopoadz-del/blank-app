@@ -1,4 +1,5 @@
-"""Expose the real pydantic-settings package when available, otherwise use the shim."""
+"""Project-local shim for environments without the real Pydantic package."""
+from __future__ import annotations
 
 import importlib
 import sys
@@ -29,26 +30,13 @@ def _load_real() -> Optional[ModuleType]:
 
 
 def _load_shim() -> ModuleType:
-    return importlib.import_module("app.shims.pydantic_settings")
+    return importlib.import_module("app.shims.pydantic")
 
 
-_module = _load_real() or _load_shim()
+_module = _load_real()
+if _module is None:
+    _module = _load_shim()
+
 sys.modules[__name__] = _module
 globals().update({name: getattr(_module, name) for name in dir(_module)})
 __all__ = getattr(_module, "__all__", [])
-
-"""Minimal subset of pydantic-settings for tests."""
-from __future__ import annotations
-
-from typing import Any
-
-from pydantic import BaseModel
-
-
-class BaseSettings(BaseModel):
-    class Config:
-        env_file = None
-        case_sensitive = False
-
-    def __init__(self, **values: Any):
-        super().__init__(**values)
