@@ -1,4 +1,5 @@
 """CORS middleware stub for compatibility."""
+<<<<< codex/fix-failed-ci-and-security-scan-workflows-h3h6es
 from __future__ import annotations
 
 from stub_utils import load_actual_module
@@ -19,3 +20,11 @@ else:
     __all__ = ["CORSMiddleware"]
 
 __all__ = list(__all__)
+=======
+
+
+class CORSMiddleware:  # pragma: no cover - behavior not needed in tests
+    def __init__(self, app=None, **kwargs):
+        self.app = app
+        self.options = kwargs
+>>>>> main

@@ -1,4 +1,5 @@
 """Security helpers for the FastAPI stubs."""
+<<<<< codex/fix-failed-ci-and-security-scan-workflows-h3h6es
 from __future__ import annotations
 
 from stub_utils import load_actual_module
@@ -15,3 +16,8 @@ else:
     __all__ = ["APIKeyHeader"]
 
 __all__ = list(__all__)
+=======
+from ..app import APIKeyHeader
+
+__all__ = ["APIKeyHeader"]
+>>>>> main

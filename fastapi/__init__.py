@@ -1,3 +1,4 @@
+<<<<< codex/fix-failed-ci-and-security-scan-workflows-h3h6es
 """FastAPI compatibility layer used for offline testing environments."""
 from __future__ import annotations
 
@@ -30,3 +31,18 @@ else:
     ]
 
 __all__ = list(__all__)
+=======
+"""Lightweight FastAPI-compatible stubs for offline testing."""
+from .app import FastAPI, APIRouter, Depends, Security, HTTPException, Request
+from .status import status
+
+__all__ = [
+    "FastAPI",
+    "APIRouter",
+    "Depends",
+    "Security",
+    "HTTPException",
+    "Request",
+    "status",
+]
+>>>>> main

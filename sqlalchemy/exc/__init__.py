@@ -1,4 +1,5 @@
 """Exception helpers."""
+<<<<< codex/fix-failed-ci-and-security-scan-workflows-h3h6es
 from __future__ import annotations
 
 from stub_utils import load_actual_module
@@ -15,3 +16,8 @@ else:
     __all__ = ["OperationalError"]
 
 __all__ = list(__all__)
+=======
+from .. import OperationalError
+
+__all__ = ["OperationalError"]
+>>>>> main
