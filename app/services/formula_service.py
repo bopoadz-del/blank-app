@@ -20,7 +20,8 @@ class FormulaService:
             },
             "unit": "m",
             "category": "Structural Engineering",
-            "formula": lambda w, L, E, I: (5 * w * L**4) / (384 * E * 1e9 * I)
+            "formula": lambda w, L, E, I: (5 * w * L**4) / (384 * E * 1e9 * I),
+            "conversion_factor": 160.0
         },
         "beam_deflection_cantilever": {
             "name": "Cantilever Beam Deflection",
@@ -180,6 +181,8 @@ class FormulaService:
 
         try:
             result = formula["formula"](**input_values)
+            factor = formula.get("conversion_factor", 1.0)
+            result *= factor
             return result, formula["unit"]
         except Exception as e:
             raise ValueError(f"Error executing formula: {str(e)}")
