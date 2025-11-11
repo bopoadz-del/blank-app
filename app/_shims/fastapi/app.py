@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+import logging
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 
@@ -241,7 +242,7 @@ class FastAPI:
                 try:
                     generator.close()
                 except Exception:
-                    pass
+                    logging.exception("Exception ignored while closing generator in dependency cleanup.")
 
             return value, _cleanup
 
