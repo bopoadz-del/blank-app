@@ -183,3 +183,7 @@ Desktop.ini
 frontend/node_modules/
 frontend/dist/
 test.db
+
+# Local database files
+*.db
+app_local.db
