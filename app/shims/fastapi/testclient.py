@@ -25,8 +25,8 @@ class TestClient:
     def _exit_lifespan(self) -> None:
         try:
             self._loop.run_until_complete(self.app._exit_lifespan())
-        except Exception:
-            pass
+        except Exception as exc:
+            logging.error("Exception occurred during TestClient._exit_lifespan: %s", exc, exc_info=True)
         finally:
             self._loop.close()
 
