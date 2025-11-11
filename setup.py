@@ -21,6 +21,11 @@ core_requirements = [
     "joblib>=1.1.0",
     "tqdm>=4.62.0",
     "pyyaml>=6.0",
+    "fastapi>=0.109.0,<0.110.0",
+    "uvicorn[standard]>=0.27.0,<0.28.0",
+    "pydantic>=2.6.0,<2.7.0",
+    "pydantic-settings>=2.1.0,<2.2.0",
+    "python-multipart>=0.0.6,<0.0.8",
 ]
 
 # Full ML dependencies
