@@ -1,3 +1,4 @@
+<<<<< codex/fix-failed-ci-and-security-scan-workflows-6yxfgs
 """Compatibility shim that prefers real pydantic-settings when available."""
 from __future__ import annotations
 
@@ -82,3 +83,20 @@ else:
 
 del _try_load_real_package
 del _real_settings
+=======
+"""Minimal subset of pydantic-settings for tests."""
+from __future__ import annotations
+
+from typing import Any
+
+from pydantic import BaseModel
+
+
+class BaseSettings(BaseModel):
+    class Config:
+        env_file = None
+        case_sensitive = False
+
+    def __init__(self, **values: Any):
+        super().__init__(**values)
+>>>>> main
