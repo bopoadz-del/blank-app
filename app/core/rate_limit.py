@@ -90,7 +90,6 @@ class RateLimiter:
                 self._fallback_enabled = True
 
         # Fallback in-memory rate limiting
-<<<<<codex/fix-failed-ci-and-security-scan-workflows-xj83mk
         if self._fallback_enabled:
             bucket = self._fallback_buckets[key]
             while bucket and bucket[0] <= current_time - window:
@@ -105,7 +104,6 @@ class RateLimiter:
             bucket.append(current_time)
             return True
 
-=======
         bucket = self._fallback_buckets[key]
         while bucket and bucket[0] <= current_time - window:
             bucket.popleft()
@@ -117,7 +115,6 @@ class RateLimiter:
             )
 
         bucket.append(current_time)
->>>>> main
         return True
 
 
