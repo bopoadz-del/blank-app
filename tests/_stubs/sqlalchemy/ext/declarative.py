@@ -36,7 +36,6 @@ def declarative_base():
     metadata = MetaData()
 
     class DeclarativeBase(metaclass=DeclarativeMeta):
-        pass
 
         def __init__(self, **kwargs: Any):
             columns: Dict[str, Column] = getattr(self.__class__, "__columns__", {})
