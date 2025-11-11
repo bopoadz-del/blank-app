@@ -1,7 +1,11 @@
 """Rate limiting middleware using Redis with graceful fallback."""
 
 from collections import defaultdict, deque
+
+from typing import Any, Deque, DefaultDict, Dict, Optional
+
 from typing import Deque, DefaultDict, Optional
+
 import time
 
 from fastapi import HTTPException, status, Request
@@ -14,18 +18,57 @@ except ModuleNotFoundError:  # pragma: no cover - handled by fallback
     redis = None
 
 
+
+class _InMemoryRedisClient:
+    """In-memory Redis replacement matching the subset of operations used."""
+
+    def __init__(self) -> None:
+        self._store: DefaultDict[str, Dict[str, int]] = defaultdict(dict)
+
+    async def zremrangebyscore(self, key: str, min_score: int, max_score: int) -> None:
+        bucket = self._store[key]
+        for member, score in list(bucket.items()):
+            if min_score <= score <= max_score:
+                del bucket[member]
+
+    async def zcard(self, key: str) -> int:
+        return len(self._store[key])
+
+    async def zadd(self, key: str, mapping: Dict[str, int]) -> None:
+        bucket = self._store[key]
+        for member, score in mapping.items():
+            bucket[member] = score
+
+    async def expire(self, key: str, ttl: int) -> None:  # pragma: no cover - no-op for stub
+        return None
+
+    async def close(self) -> None:
+        self._store.clear()
+
+
+
+
 class RateLimiter:
     """Rate limiter using Redis for distributed rate limiting"""
 
     def __init__(self):
+
+        self.redis_client: Optional[Any] = None
+
         self.redis_client: Optional["redis.Redis"] = None
+
         self._fallback_buckets: DefaultDict[str, Deque[int]] = defaultdict(deque)
         self._fallback_enabled = False
 
     async def init_redis(self):
         """Initialize Redis connection"""
         if redis is None:
+
+            self.redis_client = _InMemoryRedisClient()
+            self._fallback_enabled = False
+
             self._fallback_enabled = True
+
             return
 
         try:
@@ -37,6 +80,11 @@ class RateLimiter:
             )
             self._fallback_enabled = False
         except Exception:
+
+            # Redis server is unavailable – fall back to in-memory compatibility client
+            self.redis_client = _InMemoryRedisClient()
+            self._fallback_enabled = False
+
             # Redis server is unavailable – fall back to in-memory rate limiting
             self.redis_client = None
             self._fallback_enabled = True
@@ -90,7 +138,23 @@ class RateLimiter:
                 self._fallback_enabled = True
 
         # Fallback in-memory rate limiting
-<<<<<codex/fix-failed-ci-and-security-scan-workflows-xj83mk
+
+        if self._fallback_enabled:
+            bucket = self._fallback_buckets[key]
+            # drop timestamps outside the current window
+            while bucket and bucket[0] <= current_time - window:
+                bucket.popleft()
+
+            # apply the same threshold as the main rate limiter
+            if len(bucket) >= settings.RATE_LIMIT_PER_MINUTE:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=(
+                        f"Rate limit exceeded. Maximum "
+                        f"{settings.RATE_LIMIT_PER_MINUTE} requests per minute."
+                    )
+                )
+
         if self._fallback_enabled:
             bucket = self._fallback_buckets[key]
             while bucket and bucket[0] <= current_time - window:
@@ -100,12 +164,12 @@ class RateLimiter:
                 raise HTTPException(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     detail=f"Rate limit exceeded. Maximum {settings.RATE_LIMIT_PER_MINUTE} requests per minute."
+
                 )
 
             bucket.append(current_time)
             return True
 
-=======
         bucket = self._fallback_buckets[key]
         while bucket and bucket[0] <= current_time - window:
             bucket.popleft()
@@ -117,7 +181,7 @@ class RateLimiter:
             )
 
         bucket.append(current_time)
->>>>> main
+
         return True
 
 
