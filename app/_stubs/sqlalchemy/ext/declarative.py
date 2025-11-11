@@ -15,6 +15,7 @@ class _Metadata:
             Session._store.clear()
             Session._id_counter.clear()
         except Exception:
+            # This is a stub implementation, so we intentionally ignore exceptions.
             pass
 
 
