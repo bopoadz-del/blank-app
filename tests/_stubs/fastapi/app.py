@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import inspect
 from dataclasses import dataclass
+import logging
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 
 from pydantic import BaseModel
@@ -243,8 +244,8 @@ class FastAPI:
             def _cleanup() -> None:
                 try:
                     generator.close()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logging.exception("Exception occurred while closing dependency generator during cleanup.")
 
             return value, _cleanup
 
