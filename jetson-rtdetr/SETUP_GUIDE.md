@@ -428,6 +428,75 @@ python3 models/rtdetr_tensorrt.py \
 5. ✅ Appropriate batch size
 6. ✅ Thermal throttling not occurring
 
+### Issue: Camera Not Opening / Not Responding
+
+**Symptoms:**
+- "Failed to open video source" error
+- Camera not detected
+- Can open camera but no frames received
+
+**Solutions:**
+
+1. **Check Camera Connection:**
+   ```bash
+   # List available video devices
+   ls -l /dev/video*
+   
+   # Check camera detection
+   v4l2-ctl --list-devices
+   ```
+
+2. **Verify Permissions:**
+   ```bash
+   # Add user to video group
+   sudo usermod -a -G video $USER
+   
+   # Log out and back in, or reboot
+   ```
+
+3. **Check if Camera is in Use:**
+   ```bash
+   # See which processes are using the camera
+   sudo lsof /dev/video0
+   
+   # Kill process if needed
+   sudo kill -9 <PID>
+   ```
+
+4. **Try Different Camera Indices:**
+   ```bash
+   # Some systems have multiple video devices
+   python3 examples/video_inference.py --model model.onnx --input 0
+   python3 examples/video_inference.py --model model.onnx --input 1
+   python3 examples/video_inference.py --model model.onnx --input 2
+   ```
+
+5. **Check System Logs:**
+   ```bash
+   # Look for hardware errors
+   dmesg | grep -i video
+   dmesg | grep -i camera
+   dmesg | grep -i usb
+   ```
+
+6. **Test Camera with Simple Command:**
+   ```bash
+   # Test with GStreamer
+   gst-launch-1.0 nvarguscamerasrc ! nvoverlaysink
+   
+   # Test with OpenCV
+   python3 -c "import cv2; cap = cv2.VideoCapture(0); print('Success' if cap.isOpened() else 'Failed')"
+   ```
+
+7. **For CSI Cameras (Jetson Native):**
+   ```bash
+   # Use GStreamer pipeline
+   python3 examples/video_inference.py --model model.onnx \
+       --input "nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=NV12, framerate=30/1 ! nvvidconv ! video/x-raw, format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink"
+   ```
+
+**Note:** The video inference script now includes automatic retry mechanism (3 attempts) and detailed diagnostics when camera fails to open.
+
 ### Issue: Segmentation Fault
 
 ```bash
