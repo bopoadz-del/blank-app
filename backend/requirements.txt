@@ -23,6 +23,7 @@ python-multipart==0.0.6
 # Basic Math & Data
 numpy==1.26.2
 sympy==1.12
+pint==0.23  # Unit conversions
 
 # API & Networking
 httpx==0.25.2
@@ -35,6 +36,7 @@ loguru==0.7.2
 
 # Monitoring
 prometheus-client==0.19.0
+mlflow==2.10.2  # Formula tracking and experiment management
 
 # Google Drive Integration
 google-api-python-client==2.108.0
