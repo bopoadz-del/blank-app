@@ -1,4 +1,3 @@
-<<<<< codex/fix-failed-ci-and-security-scan-workflows-g60q29
 """Compatibility shim that prefers real FastAPI when available."""
 from __future__ import annotations
 
@@ -69,18 +68,3 @@ else:
 
 del _try_load_real_package
 del _real_fastapi
-=======
-"""Lightweight FastAPI-compatible stubs for offline testing."""
-from .app import FastAPI, APIRouter, Depends, Security, HTTPException, Request
-from .status import status
-
-__all__ = [
-    "FastAPI",
-    "APIRouter",
-    "Depends",
-    "Security",
-    "HTTPException",
-    "Request",
-    "status",
-]
->>>>> main
