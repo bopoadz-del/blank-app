@@ -1,42 +1,38 @@
 """Project-local shim for environments without the real Pydantic package."""
-from __future__ import annotations
 
-import importlib
+import importlib.util
 import sys
-from importlib.machinery import PathFinder
 from pathlib import Path
-from types import ModuleType
-from typing import Iterable, Optional
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+# Temporarily remove project root from sys.path to check for real pydantic
+_temp_path = [p for p in sys.path if Path(p).resolve() != _PROJECT_ROOT]
+_has_real = False
 
-def _search_paths() -> Iterable[str]:
-    for entry in sys.path:
-        candidate = Path(entry or ".").resolve()
-        if candidate == _PROJECT_ROOT:
-            continue
-        yield str(candidate)
+_saved_path = sys.path[:]
+sys.path[:] = _temp_path
+try:
+    import pydantic as _real
+    _has_real = True
+except ImportError:
+    pass
+finally:
+    sys.path[:] = _saved_path
 
-
-def _load_real() -> Optional[ModuleType]:
-    for entry in _search_paths():
-        spec = PathFinder.find_spec(__name__, [entry])
-        if spec and spec.loader:
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            return module
-    return None
-
-
-def _load_shim() -> ModuleType:
-    return importlib.import_module("app.shims.pydantic")
-
-
-_module = _load_real()
-if _module is None:
-    _module = _load_shim()
-
-sys.modules[__name__] = _module
-globals().update({name: getattr(_module, name) for name in dir(_module)})
-__all__ = getattr(_module, "__all__", [])
+if _has_real:
+    # Real pydantic exists - replace this module
+    sys.path[:] = _temp_path
+    
+    if 'pydantic' in sys.modules:
+        del sys.modules['pydantic']
+    import pydantic as _real_pydantic
+    
+    sys.modules[__name__] = _real_pydantic
+    
+    sys.path[:] = _saved_path
+else:
+    # No real pydantic - use shim
+    import importlib
+    _module = importlib.import_module("app.shims.pydantic")
+    sys.modules[__name__] = _module
