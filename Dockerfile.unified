@@ -1,0 +1,95 @@
+# =============================================================================
+# Multi-Stage Dockerfile for Unified Frontend + Backend Deployment
+# =============================================================================
+# This Dockerfile builds the frontend with Node.js, installs backend
+# dependencies, and creates a single image that serves both the React SPA
+# and the FastAPI backend.
+#
+# The frontend is copied to backend/frontend/dist where FastAPI will serve it.
+# The backend runs on the port specified by Render's $PORT environment variable.
+#
+# Build: docker build -f Dockerfile.unified -t blank-app:unified .
+# Run: docker run -p 8000:8000 -e PORT=8000 blank-app:unified
+# =============================================================================
+
+# --- Stage 1: Build Frontend ---
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+
+# Copy package files for better caching
+COPY frontend/package*.json ./
+
+# Install dependencies
+RUN npm ci --silent
+
+# Copy frontend source
+COPY frontend/ .
+
+# Build the frontend (output to frontend/dist)
+RUN npm run build
+
+# --- Stage 2: Build Backend ---
+FROM python:3.11-slim AS backend-builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       build-essential \
+       gcc \
+       libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy backend source
+COPY backend/ ./backend
+
+# Install Python dependencies
+WORKDIR /app/backend
+RUN if [ -f requirements.txt ]; then \
+        pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt; \
+    fi
+
+# --- Stage 3: Final Runtime Image ---
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       ca-certificates \
+       libpq5 \
+       curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python packages from builder
+COPY --from=backend-builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=backend-builder /usr/local/bin /usr/local/bin
+
+# Copy backend application
+COPY --from=backend-builder /app/backend ./backend
+
+# Copy built frontend into backend/frontend/dist so FastAPI can serve it
+COPY --from=frontend-builder /app/frontend/dist ./backend/frontend/dist
+
+# Set working directory to backend
+WORKDIR /app/backend
+
+# Set environment variables
+ENV PYTHONPATH=/app/backend
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PORT=8000
+
+# Expose port (Render will override with $PORT)
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl --fail http://localhost:${PORT:-8000}/health || exit 1
+
+# Run uvicorn with PORT from environment variable
+# --proxy-headers is needed for Render's proxy
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers"]
