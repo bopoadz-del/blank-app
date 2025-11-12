@@ -1,0 +1,75 @@
+services:
+  # Unified Backend + Frontend Deployment
+  - type: web
+    name: ml-platform-unified
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: |
+      # Install backend dependencies
+      pip install --upgrade pip
+      pip install -r backend/requirements.txt
+      
+      # Build frontend
+      cd frontend
+      npm install
+      VITE_API_URL=https://ml-platform-unified.onrender.com npm run build
+      
+      # Copy frontend build to backend directory
+      mkdir -p ../frontend/dist
+      cp -r dist/* ../frontend/dist/
+      cd ..
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ml-platform-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: 7
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: APP_NAME
+        value: "Reasoner AI Platform"
+      - key: APP_VERSION
+        value: "1.0.0"
+      - key: API_V1_PREFIX
+        value: "/api/v1"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8000"
+      - key: DEBUG
+        value: "False"
+      - key: LOG_LEVEL
+        value: "INFO"
+      - key: API_KEY_ENABLED
+        value: "false"
+      - key: MLFLOW_TRACKING_URI
+        value: "sqlite:///./mlflow.db"
+      - key: GOOGLE_DRIVE_CREDENTIALS_BASE64
+        value: ""
+      - key: GOOGLE_DRIVE_CREDENTIALS_PATH
+        value: "/tmp/gd_credentials.json"
+      - key: GOOGLE_DRIVE_FOLDER_ID
+        value: "1MFvAWURZGw-a7X3KKpiAvMxpRIH-tqZQ"
+      - key: DATA_INGESTION_INTERVAL
+        value: "3600"
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        value: "382554705937-v3s8kpvl7h0em2aekud73fro8rig0cvu.apps.googleusercontent.com"
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        value: "https://ml-platform-unified.onrender.com/drive/callback"
+      - key: OPENAI_API_KEY
+        value: ""
+
+# NOTE: This configuration combines both frontend and backend into a single service
+# The backend serves the frontend static files at the root path
+# API endpoints are available at /api/v1/*
+# API documentation is available at /docs

@@ -12,6 +12,61 @@ A production-ready platform combining symbolic reasoning, machine learning, and 
 
 ---
 
+## 🎯 Deployment Options
+
+### Option 1: Full Stack (UI + API) - Recommended ⭐
+
+**Single unified deployment** serving both React UI and API from one URL.
+
+```bash
+# Build frontend
+cd frontend && npm run build && cd ..
+
+# Start server (serves UI at / and API at /api/v1/*)
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+**Access:**
+- 🎨 **UI**: `http://localhost:8000/` - React Dashboard
+- 📡 **API**: `http://localhost:8000/api/v1/*` - REST API
+- 📚 **Docs**: `http://localhost:8000/docs` - Swagger UI
+- 💚 **Health**: `http://localhost:8000/health` - Health Check
+
+**Deploy:** See [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)
+
+### Option 2: API-Only (No UI)
+
+**Standalone backend service** without frontend (shows JSON at root).
+
+```bash
+# Start API server (no frontend build needed)
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# Access API
+curl http://localhost:8000/
+```
+
+**Response:**
+```json
+{
+  "name": "Formula Execution API",
+  "version": "1.0.0",
+  "environment": "development",
+  "docs": "/docs",
+  "health": "/health"
+}
+```
+
+**Perfect for:**
+- Microservice architectures
+- Mobile app backends
+- CLI tool integrations
+- Embedded systems (edge devices)
+
+**Guide:** See [API_STANDALONE_GUIDE.md](API_STANDALONE_GUIDE.md)
+
+---
+
 ## 🎯 What's New - Phase 1 Complete!
 
 ### ✨ **Formula Catalog Portal** (Just Released!)

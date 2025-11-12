@@ -1,7 +1,10 @@
 """FastAPI application entry point"""
 
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
@@ -70,14 +73,39 @@ app.include_router(
 )
 
 
-# Root endpoint
-@app.get("/")
-async def root():
-    """Root endpoint with API information"""
-    return {
-        "name": settings.PROJECT_NAME,
-        "version": settings.VERSION,
-        "environment": settings.ENVIRONMENT,
-        "docs": "/docs",
-        "health": "/health"
-    }
+# Check if frontend build exists and serve it
+frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
+frontend_available = frontend_dist.exists() and frontend_dist.is_dir()
+
+if frontend_available:
+    # Mount static assets
+    assets_dir = frontend_dist / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+    
+    # Serve index.html for root and all frontend routes
+    @app.get("/", include_in_schema=False)
+    @app.get("/dashboard", include_in_schema=False)
+    @app.get("/catalog", include_in_schema=False)
+    @app.get("/formulas", include_in_schema=False)
+    @app.get("/admin", include_in_schema=False)
+    @app.get("/admin/certifications", include_in_schema=False)
+    @app.get("/auditor", include_in_schema=False)
+    @app.get("/login", include_in_schema=False)
+    async def serve_spa():
+        """Serve the React SPA"""
+        return FileResponse(frontend_dist / "index.html")
+else:
+    # API-only mode - serve API information at root
+    @app.get("/")
+    async def root():
+        """Root endpoint with API information"""
+        return {
+            "name": settings.PROJECT_NAME,
+            "version": settings.VERSION,
+            "environment": settings.ENVIRONMENT,
+            "docs": "/docs",
+            "health": "/health",
+            "frontend": "not_available",
+            "note": "Frontend UI not found. Access API docs at /docs"
+        }

@@ -1,0 +1,22 @@
+# Gitleaks configuration file
+# https://github.com/gitleaks/gitleaks
+
+title = "Gitleaks Configuration"
+
+[allowlist]
+description = "Known issues that have been addressed"
+# Known exposed Render API key that has been revoked and removed from code
+# See SECURITY_INCIDENT_REPORT.md for details
+# This key was revoked on November 12, 2025 and is no longer active
+regexes = [
+  '''rnd_m4Ky2HffiJibZzOaNwnAsCaKJZFz''',
+]
+
+paths = [
+  '''SECURITY_INCIDENT_REPORT\.md''',
+  '''SECURITY_FIX_SUMMARY\.md''',
+]
+
+commits = [
+  '''a814a4e''',  # Commit where key was initially introduced (revoked)
+]
