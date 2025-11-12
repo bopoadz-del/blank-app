@@ -22,7 +22,6 @@ FRONTEND_DIST = BASE_DIR / "frontend" / "dist"
 FRONTEND_DIST = Path(os.getenv("FRONTEND_DIST_PATH", str(FRONTEND_DIST)))
 
 if FRONTEND_DIST.exists() and (FRONTEND_DIST / "index.html").exists():
-    # Serve SPA at root, html=True returns index.html for unknown routes (SPA routing)
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="frontend")
 
     @app.get("/__index")
@@ -41,6 +40,4 @@ async def health():
     return {"status": "ok"}
 
 # Include API routers under /api to avoid collision with SPA routes
-# Example:
-# from app.api import api_router
 # app.include_router(api_router, prefix="/api")

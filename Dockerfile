@@ -28,9 +28,11 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Create non-root app user
 ARG APP_USER=appuser
 RUN groupadd -r $APP_USER && useradd -r -g $APP_USER $APP_USER
 
+# Copy virtualenv from builder
 COPY --from=backend-builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
@@ -42,6 +44,7 @@ WORKDIR /app/backend
 ENV PYTHONPATH=/app/backend
 ENV PORT=8000
 
+# Ensure non-root user owns the app files and switch
 RUN chown -R $APP_USER:$APP_USER /app
 USER $APP_USER
 

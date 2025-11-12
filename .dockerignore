@@ -1,16 +1,10 @@
-# Node / frontend artifacts
 frontend/node_modules
 node_modules
 frontend/dist
-
-# Python artifacts
 **/__pycache__
 **/*.pyc
 .venv
 venv
-
-# Project / repo
 .git
-Dockerfile
 README.md
 .env
