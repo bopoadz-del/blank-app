@@ -11,13 +11,14 @@ from sqlalchemy.orm import Session
 import secrets
 
 from app.core.database import get_db
+from app.core.config import settings
 from app.models.auth import User
 
-# Security settings
-SECRET_KEY = "your-secret-key-change-in-production-use-env-variable"  # TODO: Move to env
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+# Security settings from configuration
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
