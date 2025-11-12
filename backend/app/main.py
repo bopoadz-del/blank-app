@@ -1,10 +1,12 @@
 """
 Main FastAPI application for The Reasoner AI Platform.
 """
+from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException, status, Security, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.api_key import APIKeyHeader
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import uuid
@@ -12,6 +14,7 @@ from datetime import datetime
 import time
 import logging
 import json
+import os
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 from app.core.config import settings
@@ -75,7 +78,7 @@ app = FastAPI(
     description="Universal Mathematical Reasoning Infrastructure with Continuous Learning"
 )
 
-# CORS middleware
+# CORS middleware (for dev; tighten in production to your actual origin(s))
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS.split(",") if hasattr(settings, 'CORS_ORIGINS') else ["*"],
@@ -83,6 +86,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ==================== STATIC FILE SERVING ====================
+# Paths: this file sits at backend/app, so climb to backend/
+BASE_DIR = Path(__file__).resolve().parent.parent
+# Primary place we'll look for the built frontend inside the image
+FRONTEND_DIST = BASE_DIR / "frontend" / "dist"
+
+# Allow overriding via env var if needed (useful for tests)
+FRONTEND_DIST = Path(os.getenv("FRONTEND_DIST_PATH", str(FRONTEND_DIST)))
 
 # ==================== LOGGING SETUP ====================
 logging.basicConfig(
@@ -346,19 +358,6 @@ async def metrics():
         content=generate_latest(),
         media_type=CONTENT_TYPE_LATEST
     )
-
-
-@app.get("/")
-async def root():
-    """API root with basic info."""
-    return {
-        "name": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "status": "running",
-        "docs_url": "/docs",
-        "health_url": "/health",
-        "metrics_url": "/metrics"
-    }
 
 
 # ==================== FORMULA MANAGEMENT ====================
@@ -804,6 +803,56 @@ async def get_unit_info(unit: str):
         )
     
     return info
+
+
+# ==================== STATIC FILE SERVING FOR SPA ====================
+# This must come AFTER all API route definitions to avoid conflicts
+# Mount static assets (CSS, JS, images, etc.) at a specific path
+if FRONTEND_DIST.exists():
+    # Mount static files for assets like JS, CSS, images
+    # These are served with proper MIME types
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets") if (FRONTEND_DIST / "assets").exists() else str(FRONTEND_DIST)), name="static-assets")
+    
+    # Serve index.html for the root path
+    @app.get("/")
+    async def serve_spa_root():
+        """Serve the React SPA at root."""
+        index_path = FRONTEND_DIST / "index.html"
+        if index_path.exists():
+            return FileResponse(index_path)
+        return JSONResponse(
+            {"status": "backend", "message": "Frontend not found. Build the frontend and include frontend/dist in the deployment."},
+            status_code=200,
+        )
+    
+    # Catch-all route for SPA routing (must be last)
+    # This handles client-side routes like /dashboard, /formulas, etc.
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        """Serve index.html for all unmatched routes to support SPA routing."""
+        # Don't intercept API routes, docs, or other special paths
+        if full_path.startswith(("api/", "docs", "redoc", "openapi.json", "health", "metrics")):
+            raise HTTPException(status_code=404, detail="Not found")
+        
+        # Check if it's a static file request
+        file_path = FRONTEND_DIST / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        
+        # Otherwise, serve index.html for SPA routing
+        index_path = FRONTEND_DIST / "index.html"
+        if index_path.exists():
+            return FileResponse(index_path)
+        
+        raise HTTPException(status_code=404, detail="Frontend not found")
+else:
+    # If frontend isn't present, return a clear JSON response at root
+    @app.get("/")
+    async def root():
+        return JSONResponse(
+            {"status": "backend", "message": "Frontend not found. Build the frontend and include frontend/dist in the deployment."},
+            status_code=200,
+        )
 
 
 if __name__ == "__main__":
