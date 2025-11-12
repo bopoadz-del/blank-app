@@ -48,7 +48,7 @@ COPY backend/ ./backend
 # Install Python dependencies
 WORKDIR /app/backend
 RUN if [ -f requirements.txt ]; then \
-        pip install --no-cache-dir -r requirements.txt; \
+        pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt; \
     fi
 
 # --- Stage 3: Final Runtime Image ---
@@ -73,9 +73,6 @@ COPY --from=backend-builder /app/backend ./backend
 
 # Copy built frontend into backend/frontend/dist so FastAPI can serve it
 COPY --from=frontend-builder /app/frontend/dist ./backend/frontend/dist
-
-# Copy any root-level configs if needed
-COPY .env.example ./backend/.env.example 2>/dev/null || true
 
 # Set working directory to backend
 WORKDIR /app/backend
