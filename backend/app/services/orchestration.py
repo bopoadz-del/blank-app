@@ -19,8 +19,7 @@ from app.repositories.repositories import (
     get_validation_repository,
     get_learning_repository
 )
-from app.models.database import FormulaExecution, LearningEvent
-from app.models.schemas import ExecutionStatus
+from app.models.database import FormulaExecution, LearningEvent, ExecutionStatus
 
 
 class OrchestrationPipeline:
