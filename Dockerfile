@@ -17,7 +17,8 @@ FROM python:3.11-slim AS backend-builder
 WORKDIR /build/backend
 # Install system deps needed for building wheels if any
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential curl ca-certificates gcc \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* && \
+    update-ca-certificates
 # Create a venv to make runtime copy predictable
 ENV VENV_PATH=/opt/venv
 RUN python -m venv ${VENV_PATH}
