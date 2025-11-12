@@ -12,17 +12,37 @@ A production-ready platform combining symbolic reasoning, machine learning, and 
 
 ---
 
-## 🎯 API-First Design
+## 🎯 Deployment Options
 
-**The Formula Execution API is a fully functional standalone backend service** that works independently without requiring the React frontend UI.
+### Option 1: Full Stack (UI + API) - Recommended ⭐
 
-### 🚀 Use the API Standalone
+**Single unified deployment** serving both React UI and API from one URL.
 
 ```bash
-# Start the API server
+# Build frontend
+cd frontend && npm run build && cd ..
+
+# Start server (serves UI at / and API at /api/v1/*)
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+**Access:**
+- 🎨 **UI**: `http://localhost:8000/` - React Dashboard
+- 📡 **API**: `http://localhost:8000/api/v1/*` - REST API
+- 📚 **Docs**: `http://localhost:8000/docs` - Swagger UI
+- 💚 **Health**: `http://localhost:8000/health` - Health Check
+
+**Deploy:** See [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)
+
+### Option 2: API-Only (No UI)
+
+**Standalone backend service** without frontend (shows JSON at root).
+
+```bash
+# Start API server (no frontend build needed)
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 
-# Access the API
+# Access API
 curl http://localhost:8000/
 ```
 
@@ -37,17 +57,13 @@ curl http://localhost:8000/
 }
 ```
 
-### 📚 Quick Links
-- **API Documentation (Swagger UI):** `http://localhost:8000/docs`
-- **Health Check:** `http://localhost:8000/health`
-- **OpenAPI Schema:** `http://localhost:8000/openapi.json`
-- **Standalone Guide:** See [API_STANDALONE_GUIDE.md](API_STANDALONE_GUIDE.md)
-
-**No Frontend Required!** The API is self-sufficient with built-in Swagger UI documentation, health checks, and rate limiting. Perfect for:
+**Perfect for:**
 - Microservice architectures
 - Mobile app backends
 - CLI tool integrations
 - Embedded systems (edge devices)
+
+**Guide:** See [API_STANDALONE_GUIDE.md](API_STANDALONE_GUIDE.md)
 
 ---
 
