@@ -18,8 +18,9 @@ class Settings(BaseSettings):
     PORT: int = 8000
 
     # Security
-    SECRET_KEY: str = "dev-secret-key-CHANGE-IN-PRODUCTION"  # Must be set via environment variable in production
-    API_KEY: str = "test-api-key-12345-CHANGE-IN-PRODUCTION"  # Must be set via environment variable in production
+    # WARNING: Change these values in production! Use environment variables.
+    SECRET_KEY: str = "dev-secret-key"  # Change in production via env var
+    API_KEY: str = "test-api-key-12345"  # Change in production via env var
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 

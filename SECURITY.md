@@ -5,7 +5,7 @@
 ### Critical Security Items
 
 #### 1. Secret Key (CRITICAL)
-**Default**: `dev-secret-key-CHANGE-IN-PRODUCTION`
+**Default**: `dev-secret-key`
 
 **Must Change Before Production!**
 
@@ -30,7 +30,7 @@ SECRET_KEY=your-generated-secure-secret-key
 - Authentication bypass possible
 
 #### 2. API Key (CRITICAL)
-**Default**: `test-api-key-12345-CHANGE-IN-PRODUCTION`
+**Default**: `test-api-key-12345`
 
 **Must Change Before Production!**
 
