@@ -1,7 +1,11 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import type { AuthResponse, LoginRequest, RegisterRequest, User } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// For unified deployment where frontend and backend are served from the same origin,
+// use empty string to make axios use relative URLs. Otherwise use the configured URL.
+const API_BASE_URL = import.meta.env.VITE_API_URL === '' 
+  ? '' // Use relative URLs for same-origin deployment
+  : import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 class ApiService {
   private client: AxiosInstance;
