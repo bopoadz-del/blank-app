@@ -1,4 +1,3 @@
-# Node / frontend artifacts
 frontend/node_modules
 node_modules
 frontend/dist
@@ -7,6 +6,5 @@ frontend/dist
 .venv
 venv
 .git
-Dockerfile
 README.md
 .env
