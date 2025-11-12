@@ -25,6 +25,10 @@ class ExecutionStatusEnum(str, Enum):
     TIMEOUT = "timeout"
 
 
+# Backwards-compatibility alias for code that expects ExecutionStatus
+ExecutionStatus = ExecutionStatusEnum
+
+
 class ValidationStageEnum(str, Enum):
     SYNTACTIC = "syntactic"
     DIMENSIONAL = "dimensional"
