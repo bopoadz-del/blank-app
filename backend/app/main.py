@@ -1,10 +1,12 @@
 """
 Main FastAPI application for The Reasoner AI Platform.
 """
+from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException, status, Security, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.api_key import APIKeyHeader
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import uuid
@@ -12,6 +14,7 @@ from datetime import datetime
 import time
 import logging
 import json
+import os
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 from app.core.config import settings
@@ -70,12 +73,12 @@ database.Base.metadata.create_all(bind=engine)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title=settings.APP_NAME,
+    title="Blank App - Unified UI+API",
     version=settings.APP_VERSION,
     description="Universal Mathematical Reasoning Infrastructure with Continuous Learning"
 )
 
-# CORS middleware
+# CORS middleware - for dev; tighten in production
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS.split(",") if hasattr(settings, 'CORS_ORIGINS') else ["*"],
@@ -90,6 +93,15 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# ==================== FRONTEND STATIC FILES ====================
+# Paths: this file sits at backend/app, so climb to backend/
+BASE_DIR = Path(__file__).resolve().parent.parent
+# Primary place we'll look for the built frontend inside the image
+FRONTEND_DIST = BASE_DIR / "frontend" / "dist"
+
+# Allow overriding via env var if needed (useful for tests)
+FRONTEND_DIST = Path(os.getenv("FRONTEND_DIST_PATH", str(FRONTEND_DIST)))
 
 # ==================== PROMETHEUS METRICS ====================
 REQUEST_COUNT = Counter(
@@ -348,17 +360,27 @@ async def metrics():
     )
 
 
-@app.get("/")
-async def root():
-    """API root with basic info."""
-    return {
-        "name": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "status": "running",
-        "docs_url": "/docs",
-        "health_url": "/health",
-        "metrics_url": "/metrics"
-    }
+# ==================== FRONTEND STATIC FILES MOUNTING ====================
+# Mount the SPA after registering all API routes so API routes take precedence
+if FRONTEND_DIST.exists() and (FRONTEND_DIST / "index.html").exists():
+    # Serve the SPA at root. html=True ensures index.html on unknown routes (SPA routing).
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="frontend")
+    logger.info(f"Frontend mounted at / from {FRONTEND_DIST}")
+
+    # Optional explicit fallback for root (helps some deployments)
+    @app.get("/__index")
+    async def _index():
+        return FileResponse(FRONTEND_DIST / "index.html")
+else:
+    # If frontend isn't present, return a clear JSON response at root
+    logger.warning(f"Frontend not found at {FRONTEND_DIST}")
+    
+    @app.get("/")
+    async def root():
+        return JSONResponse(
+            {"status": "backend", "message": "Frontend not found. Build the frontend and include frontend/dist in the deployment."},
+            status_code=200,
+        )
 
 
 # ==================== FORMULA MANAGEMENT ====================

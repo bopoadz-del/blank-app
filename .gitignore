@@ -187,3 +187,6 @@ test.db
 # Local database files
 *.db
 app_local.db
+
+# Frontend build artifacts copied to backend
+backend/frontend/dist/
