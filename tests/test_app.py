@@ -24,10 +24,20 @@ def test_root_endpoint():
     """Test the root endpoint"""
     response = client.get("/")
     assert response.status_code == 200
-    data = response.json()
-    assert "name" in data
-    assert "version" in data
-    assert "docs" in data
+    
+    # Check if frontend is available (HTML response) or API-only mode (JSON response)
+    content_type = response.headers.get("content-type", "")
+    
+    if "text/html" in content_type:
+        # Frontend is available - check for HTML
+        assert b"<!doctype html" in response.content.lower()
+        assert b"ML Framework Dashboard" in response.content or b"root" in response.content
+    else:
+        # API-only mode - check for JSON
+        data = response.json()
+        assert "name" in data
+        assert "version" in data
+        assert "docs" in data
 
 
 def test_execute_formula_without_api_key():
