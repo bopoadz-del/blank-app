@@ -12,6 +12,45 @@ A production-ready platform combining symbolic reasoning, machine learning, and 
 
 ---
 
+## 🎯 API-First Design
+
+**The Formula Execution API is a fully functional standalone backend service** that works independently without requiring the React frontend UI.
+
+### 🚀 Use the API Standalone
+
+```bash
+# Start the API server
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# Access the API
+curl http://localhost:8000/
+```
+
+**Response:**
+```json
+{
+  "name": "Formula Execution API",
+  "version": "1.0.0",
+  "environment": "development",
+  "docs": "/docs",
+  "health": "/health"
+}
+```
+
+### 📚 Quick Links
+- **API Documentation (Swagger UI):** `http://localhost:8000/docs`
+- **Health Check:** `http://localhost:8000/health`
+- **OpenAPI Schema:** `http://localhost:8000/openapi.json`
+- **Standalone Guide:** See [API_STANDALONE_GUIDE.md](API_STANDALONE_GUIDE.md)
+
+**No Frontend Required!** The API is self-sufficient with built-in Swagger UI documentation, health checks, and rate limiting. Perfect for:
+- Microservice architectures
+- Mobile app backends
+- CLI tool integrations
+- Embedded systems (edge devices)
+
+---
+
 ## 🎯 What's New - Phase 1 Complete!
 
 ### ✨ **Formula Catalog Portal** (Just Released!)
