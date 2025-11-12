@@ -149,10 +149,21 @@ jobs:
 
     - name: Test Docker image
       run: |
+        # Parse the first tag from the comma-separated list
+        IMAGE_REF=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1 | tr -d '[:space:]')
+        
+        # Fail early if IMAGE_REF is empty
+        if [ -z "$IMAGE_REF" ]; then
+          echo "ERROR: Failed to parse image tag from metadata output"
+          echo "Raw tags: ${{ steps.meta.outputs.tags }}"
+          exit 1
+        fi
+        
+        echo "Testing Docker image: $IMAGE_REF"
         docker run --rm \
           -e DATABASE_URL=sqlite:///test.db \
           -e REDIS_HOST=localhost \
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          "$IMAGE_REF" \
           python -c "from app.main import app; print('✓ App imports successfully')"
 
   deploy-staging:
