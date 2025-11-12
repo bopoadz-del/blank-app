@@ -163,3 +163,4 @@ Once the SQLAlchemy metadata column issue is fixed separately, this deployment c
 - Provide API endpoints under `/api/v1/`
 - Offer health checks at `/health`
 - Work on Render.com with auto-scaling
+
