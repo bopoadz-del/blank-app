@@ -807,44 +807,14 @@ async def get_unit_info(unit: str):
 
 # ==================== STATIC FILE SERVING FOR SPA ====================
 # This must come AFTER all API route definitions to avoid conflicts
-# Mount static assets (CSS, JS, images, etc.) at a specific path
-if FRONTEND_DIST.exists():
-    # Mount static files for assets like JS, CSS, images
-    # These are served with proper MIME types
-    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets") if (FRONTEND_DIST / "assets").exists() else str(FRONTEND_DIST)), name="static-assets")
-    
-    # Serve index.html for the root path
-    @app.get("/")
-    async def serve_spa_root():
-        """Serve the React SPA at root."""
-        index_path = FRONTEND_DIST / "index.html"
-        if index_path.exists():
-            return FileResponse(index_path)
-        return JSONResponse(
-            {"status": "backend", "message": "Frontend not found. Build the frontend and include frontend/dist in the deployment."},
-            status_code=200,
-        )
-    
-    # Catch-all route for SPA routing (must be last)
-    # This handles client-side routes like /dashboard, /formulas, etc.
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        """Serve index.html for all unmatched routes to support SPA routing."""
-        # Don't intercept API routes, docs, or other special paths
-        if full_path.startswith(("api/", "docs", "redoc", "openapi.json", "health", "metrics")):
-            raise HTTPException(status_code=404, detail="Not found")
-        
-        # Check if it's a static file request
-        file_path = FRONTEND_DIST / full_path
-        if file_path.is_file():
-            return FileResponse(file_path)
-        
-        # Otherwise, serve index.html for SPA routing
-        index_path = FRONTEND_DIST / "index.html"
-        if index_path.exists():
-            return FileResponse(index_path)
-        
-        raise HTTPException(status_code=404, detail="Frontend not found")
+if FRONTEND_DIST.exists() and (FRONTEND_DIST / "index.html").exists():
+    # Serve the SPA at root. html=True ensures index.html on unknown routes (SPA routing).
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="frontend")
+
+    # Optional explicit fallback for root (helps some deployments)
+    @app.get("/__index")
+    async def _index():
+        return FileResponse(FRONTEND_DIST / "index.html")
 else:
     # If frontend isn't present, return a clear JSON response at root
     @app.get("/")
