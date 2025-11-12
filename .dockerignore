@@ -1,0 +1,71 @@
+# Node modules
+node_modules
+frontend/node_modules
+**/node_modules
+
+# Python cache and bytecode
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+
+# Build outputs
+dist
+frontend/dist
+build
+frontend/build
+
+# Virtual environments
+.env
+.venv
+env
+venv
+ENV
+env.bak
+venv.bak
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+docker-compose*.yml
+.dockerignore
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov
+*.cover
+.hypothesis
+
+# Logs
+*.log
+logs
+
+# Documentation (usually not needed in container)
+*.md
+docs
+
+# CI/CD configs
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Other build artifacts
+*.egg-info
+.eggs
+*.egg

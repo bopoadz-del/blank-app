@@ -1,10 +1,12 @@
 """
 Main FastAPI application for The Reasoner AI Platform.
 """
+from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException, status, Security, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import uuid
@@ -348,17 +350,31 @@ async def metrics():
     )
 
 
-@app.get("/")
-async def root():
-    """API root with basic info."""
-    return {
-        "name": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "status": "running",
-        "docs_url": "/docs",
-        "health_url": "/health",
-        "metrics_url": "/metrics"
-    }
+# ==================== FRONTEND STATIC FILES ====================
+
+# Determine paths for frontend static files
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend/app -> backend
+FRONTEND_DIST = BASE_DIR / "frontend" / "dist"
+
+if FRONTEND_DIST.exists():
+    # Mount SPA at root; html=True makes index.html be served for unknown routes (SPA routing)
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="frontend")
+    logger.info(f"Frontend static files mounted from {FRONTEND_DIST}")
+else:
+    logger.warning(f"Frontend dist directory not found at {FRONTEND_DIST}")
+    
+    @app.get("/")
+    async def root():
+        """API root with basic info when frontend is not available."""
+        return {
+            "name": settings.APP_NAME,
+            "version": settings.APP_VERSION,
+            "status": "running",
+            "message": "Backend is running. Frontend not found - build the frontend and include frontend/dist in the deployment.",
+            "docs_url": "/docs",
+            "health_url": "/health",
+            "metrics_url": "/metrics"
+        }
 
 
 # ==================== FORMULA MANAGEMENT ====================
