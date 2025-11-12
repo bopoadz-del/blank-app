@@ -2,16 +2,26 @@
 """
 Automated Render Deployment Script
 Uses Render API to deploy the ML Platform programmatically.
+
+IMPORTANT: Set RENDER_API_KEY environment variable before running:
+    export RENDER_API_KEY="your-render-api-key"
 """
 import requests
 import json
 import sys
 import time
+import os
 from typing import Dict, Any, Optional
 
 # Render API Configuration
 RENDER_API_BASE = "https://api.render.com/v1"
-RENDER_API_KEY = "rnd_m4Ky2HffiJibZzOaNwnAsCaKJZFz"
+# SECURITY: Never hardcode API keys! Use environment variable
+RENDER_API_KEY = os.getenv("RENDER_API_KEY")
+
+if not RENDER_API_KEY:
+    print("❌ ERROR: RENDER_API_KEY environment variable not set!")
+    print("Please set it with: export RENDER_API_KEY='your-api-key'")
+    sys.exit(1)
 
 class RenderDeployer:
     def __init__(self, api_key: str):
