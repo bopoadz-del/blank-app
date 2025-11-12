@@ -165,6 +165,22 @@ jobs:
           -e REDIS_HOST=localhost \
           -e SECRET_KEY=test-secret-key \
           ${{ steps.test-tag.outputs.tag }} \
+        # Parse first tag produced by docker/metadata-action (comma-separated)
+        IMAGE_REF=$(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | sed -n '1s/^[[:space:]]*//;s/[[:space:]]*$//;p')
+        echo "Testing image: $IMAGE_REF"
+
+        # Debug output (uncomment during troubleshooting)
+        # echo "RAW TAGS: '${{ steps.meta.outputs.tags }}'"
+
+        if [ -z "$IMAGE_REF" ]; then
+          echo "No image tag found in steps.meta.outputs.tags: '${{ steps.meta.outputs.tags }}'"
+          exit 1
+        fi
+
+        docker run --rm \
+          -e DATABASE_URL=sqlite:///test.db \
+          -e REDIS_HOST=localhost \
+          $IMAGE_REF \
           python -c "from app.main import app; print('✓ App imports successfully')"
 
   deploy-staging:
