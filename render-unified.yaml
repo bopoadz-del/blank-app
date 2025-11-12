@@ -13,9 +13,10 @@ services:
       # Build frontend
       cd frontend
       npm install
-      VITE_API_URL=https://ml-platform-unified.onrender.com npm run build
+      # For unified deployment, API is on same domain - use relative URLs
+      VITE_API_URL="" npm run build
       
-      # Copy frontend build to backend directory
+      # Copy frontend build to root frontend directory
       mkdir -p ../frontend/dist
       cp -r dist/* ../frontend/dist/
       cd ..

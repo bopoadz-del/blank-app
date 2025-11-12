@@ -133,11 +133,12 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=sha,prefix={{branch}}-
+          type=sha,prefix=sha-
           type=semver,pattern={{version}}
           type=raw,value=latest,enable={{is_default_branch}}
 
     - name: Build and push Docker image
+      id: build
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -146,9 +147,24 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        outputs: type=registry
+
+    - name: Extract first tag for testing
+      id: test-tag
+      run: |
+        # Get the first tag from the metadata output
+        FIRST_TAG=$(echo '${{ steps.meta.outputs.tags }}' | head -n 1)
+        echo "tag=$FIRST_TAG" >> $GITHUB_OUTPUT
+        echo "Using tag for testing: $FIRST_TAG"
 
     - name: Test Docker image
       run: |
+        docker pull ${{ steps.test-tag.outputs.tag }}
+        docker run --rm \
+          -e DATABASE_URL=sqlite:///test.db \
+          -e REDIS_HOST=localhost \
+          -e SECRET_KEY=test-secret-key \
+          ${{ steps.test-tag.outputs.tag }} \
         # Parse first tag produced by docker/metadata-action (comma-separated)
         IMAGE_REF=$(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | sed -n '1s/^[[:space:]]*//;s/[[:space:]]*$//;p')
         echo "Testing image: $IMAGE_REF"
