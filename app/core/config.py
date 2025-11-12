@@ -14,17 +14,17 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # Server Configuration
-    HOST: str = "0.0.0.0"
+    HOST: str = "0.0.0.0"  # nosec B104 - Intentional for container deployments
     PORT: int = 8000
 
     # Security
-    SECRET_KEY: str = "dev-secret-key"
-    API_KEY: str = "test-api-key-12345"
+    SECRET_KEY: str = "dev-secret-key-CHANGE-IN-PRODUCTION"  # Must be set via environment variable in production
+    API_KEY: str = "test-api-key-12345-CHANGE-IN-PRODUCTION"  # Must be set via environment variable in production
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # Database
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/formulas"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/formulas"  # Must use environment variable in production
     DATABASE_ECHO: bool = False
 
     # Redis
