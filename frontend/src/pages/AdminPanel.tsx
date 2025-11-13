@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import {
   FiArrowLeft,
   FiUsers,
@@ -29,7 +28,6 @@ interface SystemMetrics {
 }
 
 export const AdminPanel: React.FC = () => {
-  const { isAdmin } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserData[]>([
     {

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,8 +27,9 @@ export const Login: React.FC = () => {
           return;
         }
 
-        await login({
+        await register({
           email: formData.email,
+          username: formData.username,
           password: formData.password,
         });
         toast.success('Registration successful!');
@@ -41,7 +42,7 @@ export const Login: React.FC = () => {
       }
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Authentication failed');
+      toast.error(error.response?.data?.detail || error.response?.data?.message || 'Authentication failed');
     } finally {
       setLoading(false);
     }

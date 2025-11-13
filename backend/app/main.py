@@ -10,12 +10,15 @@ from app.api.auth_routes import router as auth_router
 
 app = FastAPI(title="Blank App - Unified UI+API")
 
-# CORS - restrict in production
+# CORS - Configure allowed origins from environment or use safe defaults
+# For production, set CORS_ORIGINS environment variable with your frontend URL
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=False,  # Changed to False for security when using with authenticated routes
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["*"],
 )
 

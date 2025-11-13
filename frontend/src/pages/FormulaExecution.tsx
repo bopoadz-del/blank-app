@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -35,7 +34,6 @@ interface FormulaExecution {
 }
 
 const FormulaExecution: React.FC = () => {
-  const { user, isAdmin, isOperator } = useAuth();
   const navigate = useNavigate();
   const [formulas, setFormulas] = useState<Formula[]>([]);
   const [selectedFormula, setSelectedFormula] = useState<Formula | null>(null);
@@ -135,13 +133,6 @@ const FormulaExecution: React.FC = () => {
               <h1 className="text-2xl font-bold text-gray-900">Formula Execution</h1>
               <p className="text-sm text-gray-500">Execute AI formulas and review results</p>
             </div>
-            {user && (
-              <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
-                <span className="text-xs font-medium text-gray-600 uppercase">
-                  {user.role}
-                </span>
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -162,19 +153,16 @@ const FormulaExecution: React.FC = () => {
                 ) : (
                   formulas.map((formula) => {
                     const badge = getTierBadge(formula.tier);
-                    const canExecute = isAdmin || (isOperator && formula.tier === 1);
 
                     return (
                       <motion.div
                         key={formula.id}
-                        whileHover={canExecute ? { scale: 1.02 } : {}}
-                        onClick={() => canExecute && handleSelectFormula(formula)}
+                        whileHover={{ scale: 1.02 }}
+                        onClick={() => handleSelectFormula(formula)}
                         className={`p-3 rounded-lg border-2 transition-all ${
                           selectedFormula?.id === formula.id
                             ? 'border-blue-500 bg-blue-50'
-                            : canExecute
-                            ? 'border-gray-200 hover:border-blue-300 cursor-pointer'
-                            : 'border-gray-200 opacity-50 cursor-not-allowed'
+                            : 'border-gray-200 hover:border-blue-300 cursor-pointer'
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
@@ -186,11 +174,6 @@ const FormulaExecution: React.FC = () => {
                         <p className="text-xs text-gray-600 font-mono truncate">{formula.formula_id}</p>
                         {formula.description && (
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">{formula.description}</p>
-                        )}
-                        {!canExecute && (
-                          <p className="text-xs text-red-600 mt-1">
-                            {isOperator ? 'Only Tier 1 formulas allowed' : 'No permission'}
-                          </p>
                         )}
                       </motion.div>
                     );
