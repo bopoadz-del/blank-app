@@ -15,7 +15,7 @@ from app.core.security import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     REFRESH_TOKEN_EXPIRE_DAYS
 )
-from app.models.auth import User, RefreshToken
+from app.models.auth import User, RefreshToken, UserRole
 from app.schemas.auth_schemas import (
     UserCreate,
     UserLogin,
@@ -50,7 +50,7 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
         email=user_data.email,
         username=user_data.username,
         hashed_password=hashed_password,
-        role="operator"
+        role=UserRole.OPERATOR
     )
     db.add(db_user)
     db.commit()
