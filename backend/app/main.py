@@ -5,6 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 import os
 
+# Import API routers
+from app.api.auth_routes import router as auth_router
+
 app = FastAPI(title="Blank App - Unified UI+API")
 
 # CORS - restrict in production
@@ -15,6 +18,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include API routers
+app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 
 # Paths: this file sits at backend/app, so climb to backend/
 BASE_DIR = Path(__file__).resolve().parent.parent
