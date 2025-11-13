@@ -34,9 +34,9 @@ COPY --from=backend-builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /app
-COPY app/ ./app/
-COPY alembic/ ./alembic/
-COPY alembic.ini ./
+COPY backend/app/ ./app/
+COPY backend/alembic/ ./alembic/
+COPY backend/alembic.ini ./
 COPY --from=frontend-builder /build/frontend/dist ./frontend/dist
 
 ENV PYTHONPATH=/app
