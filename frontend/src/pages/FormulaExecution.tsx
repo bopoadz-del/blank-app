@@ -43,6 +43,28 @@ const FormulaExecution: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showCorrectionModal, setShowCorrectionModal] = useState(false);
 
+  // Track current user and derive isOperator; attempt localStorage first then apiService
+  const [currentUser, setCurrentUser] = useState<{ id?: number; username?: string; role?: string } | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('user');
+      if (raw) {
+        setCurrentUser(JSON.parse(raw));
+      } else if (typeof (apiService as any).getCurrentUser === 'function') {
+        (apiService as any).getCurrentUser().then((u: any) => setCurrentUser(u)).catch(() => {});
+      } else if ((window as any).CURRENT_USER) {
+        setCurrentUser((window as any).CURRENT_USER);
+      }
+    } catch (e) {
+      // ignore parse errors
+      setCurrentUser(null);
+    }
+  }, []);
+
+  const user = currentUser;
+  const isOperator = user?.role === 'operator';
+
   useEffect(() => {
     fetchFormulas();
   }, []);
@@ -62,6 +84,12 @@ const FormulaExecution: React.FC = () => {
   const handleExecuteFormula = async () => {
     if (!selectedFormula) {
       toast.error('Please select a formula');
+      return;
+    }
+
+    // Prevent operators from executing anything other than Tier 1
+    if (isOperator && selectedFormula.tier !== 1) {
+      toast.error('Operators can only execute Tier 1 certified formulas');
       return;
     }
 
@@ -95,7 +123,9 @@ const FormulaExecution: React.FC = () => {
     if (formula.input_schema) {
       setInputValues(JSON.stringify(formula.input_schema, null, 2));
     } else {
-      setInputValues('{\n  "example_input": "value"\n}');
+      setInputValues('{
+  "example_input": "value"
+}');
     }
   };
 
@@ -167,9 +197,7 @@ const FormulaExecution: React.FC = () => {
                       >
                         <div className="flex items-center justify-between mb-1">
                           <h3 className="font-semibold text-gray-900 text-sm">{formula.name}</h3>
-                          <span className={`text-xs px-2 py-0.5 rounded-full text-white ${badge.color}`}>
-                            T{formula.tier}
-                          </span>
+                          <span className={`text-xs px-2 py-0.5 rounded-full text-white ${badge.color}`}>T{formula.tier}</span>
                         </div>
                         <p className="text-xs text-gray-600 font-mono truncate">{formula.formula_id}</p>
                         {formula.description && (
@@ -196,9 +224,7 @@ const FormulaExecution: React.FC = () => {
                   <Cpu className="w-4 h-4 text-green-600" />
                   <span className="text-xs text-gray-600">Tier 1</span>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
-                  {formulas.filter(f => f.tier === 1).length}
-                </p>
+                <p className="text-2xl font-bold text-gray-900">{formulas.filter(f => f.tier === 1).length}</p>
               </div>
             </div>
           </div>
@@ -231,64 +257,4 @@ const FormulaExecution: React.FC = () => {
                   <button
                     onClick={handleExecuteFormula}
                     disabled={isExecuting}
-                    className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium"
-                  >
-                    {isExecuting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                        Executing...
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5" />
-                        Execute Formula
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Execution Result */}
-                {execution && (
-                  <ExecutionResult
-                    execution={execution}
-                    userRole={user?.role || 'operator'}
-                    onCorrectionsUpdated={fetchFormulas}
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
-                <div className="text-center">
-                  <Cpu className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Select a Formula
-                  </h3>
-                  <p className="text-gray-600 max-w-md mx-auto">
-                    Choose a formula from the list to execute it and view results.
-                    {isOperator && ' As an operator, you can only execute Tier 1 certified formulas.'}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Correction Modal */}
-      {showCorrectionModal && execution && (
-        <CorrectionModal
-          isOpen={showCorrectionModal}
-          onClose={() => setShowCorrectionModal(false)}
-          executionId={execution.id}
-          originalOutput={execution.output_values}
-          onCorrectionSubmitted={() => {
-            setShowCorrectionModal(false);
-            toast.success('Correction submitted!');
-          }}
-        />
-      )}
-    </div>
-  );
-};
-
-export default FormulaExecution;
+                    className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-cen
