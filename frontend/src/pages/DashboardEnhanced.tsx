@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { ChatInput } from '../components/ChatInput';
 import { ProjectManager } from '../components/ProjectManager';
 import { FilePreview } from '../components/FilePreview';
 import {
-  FiLogOut,
   FiSettings,
   FiMenu,
   FiPlus,
@@ -23,7 +21,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Project, Message } from '../types';
 
 export const DashboardEnhanced: React.FC = () => {
-  const { user, logout, isAdmin, isAuditor } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -121,15 +118,6 @@ export const DashboardEnhanced: React.FC = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-      toast.success('Logged out successfully');
-    } catch (error) {
-      toast.error('Logout failed');
-    }
-  };
 
   const handleNewChat = () => {
     setMessages([]);
@@ -218,18 +206,6 @@ export const DashboardEnhanced: React.FC = () => {
 
             {/* User Profile */}
             <div className="p-4 border-t border-gray-200">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  {user?.username?.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {user?.username}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <button
                   onClick={() => navigate('/formulas')}
@@ -238,46 +214,33 @@ export const DashboardEnhanced: React.FC = () => {
                   <FiCpu className="w-4 h-4" />
                   Formula Execution
                 </button>
-                {isAdmin && (
-                  <>
-                    <button
-                      onClick={() => navigate('/admin')}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <FiShield className="w-4 h-4" />
-                      Admin Panel
-                    </button>
-                    <button
-                      onClick={() => navigate('/admin/certifications')}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <FiAward className="w-4 h-4" />
-                      Certifications
-                    </button>
-                  </>
-                )}
-                {(isAuditor || isAdmin) && (
-                  <button
-                    onClick={() => navigate('/auditor')}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <FiEye className="w-4 h-4" />
-                    Audit Dashboard
-                  </button>
-                )}
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <FiShield className="w-4 h-4" />
+                  Admin Panel
+                </button>
+                <button
+                  onClick={() => navigate('/admin/certifications')}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <FiAward className="w-4 h-4" />
+                  Certifications
+                </button>
+                <button
+                  onClick={() => navigate('/auditor')}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <FiEye className="w-4 h-4" />
+                  Audit Dashboard
+                </button>
                 <button
                   onClick={() => toast('Settings coming soon')}
                   className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <FiSettings className="w-4 h-4" />
                   Settings
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <FiLogOut className="w-4 h-4" />
-                  Logout
                 </button>
               </div>
             </div>
@@ -429,7 +392,7 @@ export const DashboardEnhanced: React.FC = () => {
 
                     {message.role === 'user' && (
                       <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold flex-shrink-0">
-                        {user?.username?.charAt(0).toUpperCase()}
+                        U
                       </div>
                     )}
                   </motion.div>
