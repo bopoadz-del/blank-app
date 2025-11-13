@@ -60,12 +60,34 @@ export const AdminPanel: React.FC = () => {
     systemUptime: '7 days, 14 hours',
   });
 
+  // Keep track of the current user; attempt to load from localStorage or a global
+  // fallback. This prevents the build-time TypeScript errors caused by using
+  // isAdmin/user without a definition. In a full app this should be replaced by
+  // your auth/context/provider logic.
+  const [currentUser, setCurrentUser] = useState<{ id?: string; username?: string; role?: string } | null>(null);
+
   useEffect(() => {
-    if (!isAdmin) {
+    try {
+      const raw = localStorage.getItem('user');
+      if (raw) {
+        setCurrentUser(JSON.parse(raw));
+      } else if ((window as any).CURRENT_USER) {
+        setCurrentUser((window as any).CURRENT_USER);
+      }
+    } catch (e) {
+      // ignore parse errors and keep currentUser null
+    }
+  }, []);
+
+  const isAdmin = currentUser?.role === 'admin';
+
+  useEffect(() => {
+    // Only redirect if we have determined the current user and they are not an admin
+    if (currentUser !== null && !isAdmin) {
       navigate('/dashboard');
       toast.error('Access denied. Admin privileges required.');
     }
-  }, [isAdmin, navigate]);
+  }, [currentUser, isAdmin, navigate]);
 
   const handleDeleteUser = (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
