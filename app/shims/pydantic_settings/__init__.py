@@ -1,6 +1,7 @@
 """Minimal `pydantic-settings` compatible API for environments without the dependency."""
 from __future__ import annotations
 
+from pydantic import BaseModel
 from importlib.util import find_spec
 from typing import Any, Dict
 

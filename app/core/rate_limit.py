@@ -1,6 +1,7 @@
 """Rate limiting middleware using Redis with graceful fallback."""
 
 from collections import defaultdict, deque
+from typing import Deque, DefaultDict, Optional
 
 from typing import Any, Deque, DefaultDict, Dict, Optional
 
@@ -16,7 +17,7 @@ try:
     import redis.asyncio as redis  # type: ignore
 except ModuleNotFoundError:  # pragma: no cover - handled by fallback
     redis = None
-
+i
 
 
 class _InMemoryRedisClient:
@@ -52,6 +53,7 @@ class RateLimiter:
     """Rate limiter using Redis for distributed rate limiting"""
 
     def __init__(self):
+        self.redis_client: Optional["redis.Redis"] = None
 
         self.redis_client: Optional[Any] = None
 
@@ -63,6 +65,7 @@ class RateLimiter:
     async def init_redis(self):
         """Initialize Redis connection"""
         if redis is None:
+            self._fallback_enabled = True
 
             self.redis_client = _InMemoryRedisClient()
             self._fallback_enabled = False
@@ -152,6 +155,7 @@ class RateLimiter:
                     detail=(
                         f"Rate limit exceeded. Maximum "
                         f"{settings.RATE_LIMIT_PER_MINUTE} requests per minute."
+⁹                    ),
                     )
                 )
 
