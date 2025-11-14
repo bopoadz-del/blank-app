@@ -283,8 +283,8 @@ const FormulaExecution: React.FC = () => {
                   </div>
                 )}
               </div>
-            </motion.div>
-          )}
+            ) : null}
+          </div>
         </div>
       </div>
 
