@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import type { AuthResponse, LoginRequest, RegisterRequest, User } from '../types';
 
 // For unified deployment where frontend and backend are served from the same origin,

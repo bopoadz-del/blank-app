@@ -277,8 +277,10 @@ const FormulaExecution: React.FC = () => {
                   <div className="mt-6">
                     <ExecutionResult
                       execution={execution}
-                      onSubmitCorrection={() => setShowCorrectionModal(true)}
-                      showCorrectionButton={currentUser?.role === 'operator'}
+                      userRole={currentUser?.role || 'guest'}
+                      onCorrectionsUpdated={() => {
+                        // Refresh or handle corrections update
+                      }}
                     />
                   </div>
                 )}
@@ -291,9 +293,11 @@ const FormulaExecution: React.FC = () => {
       {/* Correction Modal */}
       {showCorrectionModal && execution && (
         <CorrectionModal
+          isOpen={showCorrectionModal}
           executionId={execution.id}
+          originalOutput={execution.output_values}
           onClose={() => setShowCorrectionModal(false)}
-          onSuccess={() => {
+          onCorrectionSubmitted={() => {
             setShowCorrectionModal(false);
             toast.success('Correction submitted successfully');
           }}
