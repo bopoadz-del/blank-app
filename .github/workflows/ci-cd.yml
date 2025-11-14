@@ -159,7 +159,7 @@ jobs:
 
     - name: Test Docker image
       run: |
-        # Parse first tag produced by docker/metadata-action (comma-separated)
+        # Parse and extract first tag from docker/metadata-action (comma-separated list), trimming whitespace
         IMAGE_REF=$(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | sed -n '1s/^[[:space:]]*//;s/[[:space:]]*$//;p')
         echo "Testing image: $IMAGE_REF"
 
