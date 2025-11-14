@@ -41,7 +41,7 @@ def test_root_endpoint():
 
 
 def test_execute_formula_without_api_key():
-    """Test formula execution without API key"""
+    """Test formula execution without API key (now public)"""
     response = client.post(
         "/api/v1/formulas/execute",
         json={
@@ -49,13 +49,21 @@ def test_execute_formula_without_api_key():
             "input_values": {"w": 10, "L": 5, "E": 200, "I": 0.0001}
         }
     )
-    assert response.status_code == 403
+    # Should succeed now that authentication is removed
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert "result" in data
 
 
 def test_list_formulas_without_api_key():
-    """Test listing formulas without API key"""
+    """Test listing formulas without API key (now public)"""
     response = client.get("/api/v1/formulas/list")
-    assert response.status_code == 403
+    # Should succeed now that authentication is removed
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) > 0
 
 
 def test_formula_service_beam_deflection():

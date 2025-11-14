@@ -17,52 +17,6 @@ class ApiService {
         'Content-Type': 'application/json',
       },
     });
-
-    // Request interceptor to add auth token
-    this.client.interceptors.request.use(
-      (config) => {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    // Response interceptor to handle token refresh
-    this.client.interceptors.response.use(
-      (response) => response,
-      async (error: AxiosError) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && originalRequest) {
-          const refreshToken = localStorage.getItem('refreshToken');
-
-          if (refreshToken) {
-            try {
-              const { data } = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
-                refreshToken,
-              });
-
-              localStorage.setItem('accessToken', data.accessToken);
-
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-              }
-
-              return this.client(originalRequest);
-            } catch (refreshError) {
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('refreshToken');
-              window.location.href = '/login';
-            }
-          }
-        }
-
-        return Promise.reject(error);
-      }
-    );
   }
 
   // Generic HTTP methods for flexibility
