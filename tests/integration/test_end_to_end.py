@@ -174,7 +174,7 @@ def test_error_scenarios():
     assert data["success"] is False
     assert "incompatible" in data["error"].lower() or "cannot convert" in data["error"].lower()
 
-    # 4. Test no API key
+    # 4. Test unauthenticated access - authentication is not required for public endpoints
     response = client.post(
         "/api/v1/formulas/execute",
         json={
@@ -183,7 +183,10 @@ def test_error_scenarios():
         }
     )
 
-    assert response.status_code == 403
+    # After PR #68, authentication is removed - public access is allowed
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
 
 
 def test_database_persistence():

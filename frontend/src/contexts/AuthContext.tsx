@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { apiService } from '../services/api';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import type { User, LoginRequest, RegisterRequest } from '../types';
 
 interface AuthContextType {
@@ -39,12 +38,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
   const [loading] = useState(false);
 
-  const login = async (credentials: LoginRequest) => {
+  const login = async (_credentials: LoginRequest) => {
     // No-op - authentication disabled
     console.log('Authentication is disabled');
   };
 
-  const register = async (userData: RegisterRequest) => {
+  const register = async (_userData: RegisterRequest) => {
     // No-op - authentication disabled
     console.log('Authentication is disabled');
   };

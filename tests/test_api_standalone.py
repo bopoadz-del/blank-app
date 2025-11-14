@@ -2,9 +2,39 @@
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from app.main import app
+from app.database.session import Base, get_db
 
+# Test database
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test_standalone.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def override_get_db():
+    """Override database dependency for testing"""
+    try:
+        db = TestingSessionLocal()
+        yield db
+    finally:
+        db.close()
+
+
+# Override dependency
+app.dependency_overrides[get_db] = override_get_db
+
+# Create test client
 client = TestClient(app)
+
+
+@pytest.fixture(scope="function", autouse=True)
+def setup_database():
+    """Setup test database before each test"""
+    Base.metadata.create_all(bind=engine)
+    yield
+    Base.metadata.drop_all(bind=engine)
 
 
 def test_api_root_returns_correct_info():
@@ -67,15 +97,15 @@ def test_api_works_without_redis():
 
 
 def test_formula_list_endpoint_exists():
-    """Test that formula list endpoint is accessible (requires auth)"""
-    # Without API key, should return 403
+    """Test that formula list endpoint is accessible (public access)"""
+    # After PR #68, authentication is removed - public access is allowed
     response = client.get("/api/v1/formulas/list")
-    assert response.status_code == 403
+    assert response.status_code == 200
 
 
 def test_formula_execute_endpoint_exists():
-    """Test that formula execute endpoint is accessible (requires auth)"""
-    # Without API key, should return 403
+    """Test that formula execute endpoint is accessible (public access)"""
+    # After PR #68, authentication is removed - public access is allowed
     response = client.post(
         "/api/v1/formulas/execute",
         json={
@@ -83,7 +113,11 @@ def test_formula_execute_endpoint_exists():
             "input_values": {}
         }
     )
-    assert response.status_code == 403
+    # Should return 200 with success=False since formula doesn't exist
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is False
+    assert "not found" in data["error"].lower()
 
 
 def test_api_provides_complete_documentation():
