@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, Request
 from typing import List
 from sqlalchemy.orm import Session
 import time
-import hashlib
 
 from app.schemas.formula import (
     FormulaExecuteRequest,
@@ -12,7 +11,6 @@ from app.schemas.formula import (
     FormulaInfo
 )
 from app.services.formula_service import formula_service
-from app.core.security import verify_api_key
 from app.core.rate_limit import rate_limiter
 from app.database.session import get_db
 from app.models.formula_execution import FormulaExecution
@@ -22,30 +20,24 @@ from app.utils.mlflow_tracker import mlflow_tracker
 router = APIRouter()
 
 
-def hash_api_key(api_key: str) -> str:
-    """Hash API key for privacy"""
-    return hashlib.sha256(api_key.encode()).hexdigest()[:16]
-
-
 @router.post("/execute", response_model=FormulaExecuteResponse)
 async def execute_formula(
     request: Request,
     payload: FormulaExecuteRequest,
-    db: Session = Depends(get_db),
-    api_key: str = Depends(verify_api_key)
+    db: Session = Depends(get_db)
 ):
     """
     Execute a formula with given input values
 
     Features:
-    - Requires valid API key in X-API-Key header
+    - No authentication required
     - Rate limited to 10 requests per minute
     - Saves execution to database
     - Tracks execution in MLflow
     - Supports unit conversion
     """
-    # Check rate limit
-    await rate_limiter.check_rate_limit(request, api_key)
+    # Check rate limit with a default identifier
+    await rate_limiter.check_rate_limit(request, "public")
 
     start_time = time.time()
     result = None
@@ -95,7 +87,7 @@ async def execute_formula(
         success=success,
         error=error_msg,
         execution_time_ms=execution_time,
-        api_key_hash=hash_api_key(api_key),
+        api_key_hash="public",  # No authentication required
         mlflow_run_id=mlflow_run_id
     )
     db.add(db_execution)
@@ -116,24 +108,21 @@ async def execute_formula(
 
 
 @router.get("/list", response_model=List[FormulaInfo])
-async def list_formulas(api_key: str = Depends(verify_api_key)):
+async def list_formulas():
     """
     List all available formulas
 
-    Requires valid API key in X-API-Key header.
+    No authentication required.
     """
     return formula_service.list_formulas()
 
 
 @router.get("/{formula_id}", response_model=FormulaInfo)
-async def get_formula_info(
-    formula_id: str,
-    api_key: str = Depends(verify_api_key)
-):
+async def get_formula_info(formula_id: str):
     """
     Get information about a specific formula
 
-    Requires valid API key in X-API-Key header.
+    No authentication required.
     """
     try:
         return formula_service.get_formula_info(formula_id)
@@ -145,8 +134,7 @@ async def get_formula_info(
 @router.get("/history/recent", response_model=List[dict])
 async def get_recent_executions(
     limit: int = 10,
-    db: Session = Depends(get_db),
-    api_key: str = Depends(verify_api_key)
+    db: Session = Depends(get_db)
 ):
     """
     Get recent formula executions
