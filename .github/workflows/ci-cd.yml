@@ -159,13 +159,7 @@ jobs:
 
     - name: Test Docker image
       run: |
-        docker pull ${{ steps.test-tag.outputs.tag }}
-        docker run --rm \
-          -e DATABASE_URL=sqlite:///test.db \
-          -e REDIS_HOST=localhost \
-          -e SECRET_KEY=test-secret-key \
-          ${{ steps.test-tag.outputs.tag }} \
-        # Parse first tag produced by docker/metadata-action (comma-separated)
+        # Parse and extract first tag from docker/metadata-action (comma-separated list), trimming whitespace
         IMAGE_REF=$(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | sed -n '1s/^[[:space:]]*//;s/[[:space:]]*$//;p')
         echo "Testing image: $IMAGE_REF"
 
