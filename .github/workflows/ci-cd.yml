@@ -160,6 +160,9 @@ jobs:
           exit 1
         fi
 
+        # Pull the image from registry since build uses outputs: type=registry
+        docker pull $IMAGE_REF
+
         docker run --rm \
           -e DATABASE_URL=sqlite:///test.db \
           -e REDIS_HOST=localhost \

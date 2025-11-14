@@ -174,7 +174,7 @@ def test_error_scenarios():
     assert data["success"] is False
     assert "incompatible" in data["error"].lower() or "cannot convert" in data["error"].lower()
 
-    # 4. Test no API key (should now work as authentication was removed for public access)
+    # 4. Test unauthenticated access - authentication is not required for public endpoints
     response = client.post(
         "/api/v1/formulas/execute",
         json={
