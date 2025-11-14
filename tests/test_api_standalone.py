@@ -3,6 +3,10 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from app.database.session import Base, engine
+
+# Create database tables before running tests
+Base.metadata.create_all(bind=engine)
 
 client = TestClient(app)
 
@@ -67,15 +71,18 @@ def test_api_works_without_redis():
 
 
 def test_formula_list_endpoint_exists():
-    """Test that formula list endpoint is accessible (requires auth)"""
-    # Without API key, should return 403
+    """Test that formula list endpoint is accessible (public API)"""
+    # API is public, should work without authentication
     response = client.get("/api/v1/formulas/list")
-    assert response.status_code == 403
+    assert response.status_code == 200
+    # Should return a list of formulas
+    data = response.json()
+    assert isinstance(data, list)
 
 
 def test_formula_execute_endpoint_exists():
-    """Test that formula execute endpoint is accessible (requires auth)"""
-    # Without API key, should return 403
+    """Test that formula execute endpoint is accessible (public API)"""
+    # API is public, should work without authentication
     response = client.post(
         "/api/v1/formulas/execute",
         json={
@@ -83,7 +90,11 @@ def test_formula_execute_endpoint_exists():
             "input_values": {}
         }
     )
-    assert response.status_code == 403
+    assert response.status_code == 200
+    # Should return an execution response (success=False for invalid formula)
+    data = response.json()
+    assert "success" in data
+    assert data["success"] is False  # Invalid formula should return success=False
 
 
 def test_api_provides_complete_documentation():
