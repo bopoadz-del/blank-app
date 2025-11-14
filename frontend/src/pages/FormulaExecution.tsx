@@ -123,9 +123,9 @@ const FormulaExecution: React.FC = () => {
     if (formula.input_schema) {
       setInputValues(JSON.stringify(formula.input_schema, null, 2));
     } else {
-      setInputValues('{
+      setInputValues(`{
   "example_input": "value"
-}');
+}`);
     }
   };
 
@@ -257,4 +257,50 @@ const FormulaExecution: React.FC = () => {
                   <button
                     onClick={handleExecuteFormula}
                     disabled={isExecuting}
-                    className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-cen
+                    className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                    {isExecuting ? (
+                      <>
+                        <Cpu className="animate-spin mr-2 h-5 w-5" />
+                        Executing...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="mr-2 h-5 w-5" />
+                        Execute Formula
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Results Section */}
+                {execution && (
+                  <div className="mt-6">
+                    <ExecutionResult
+                      execution={execution}
+                      onSubmitCorrection={() => setShowCorrectionModal(true)}
+                      showCorrectionButton={currentUser?.role === 'operator'}
+                    />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </div>
+
+      {/* Correction Modal */}
+      {showCorrectionModal && execution && (
+        <CorrectionModal
+          executionId={execution.id}
+          onClose={() => setShowCorrectionModal(false)}
+          onSuccess={() => {
+            setShowCorrectionModal(false);
+            toast.success('Correction submitted successfully');
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default FormulaExecution;
