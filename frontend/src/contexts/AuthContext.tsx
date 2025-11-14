@@ -3,7 +3,7 @@ import { apiService } from '../services/api';
 import type { User, LoginRequest, RegisterRequest } from '../types';
 
 interface AuthContextType {
-  user: User | null;
+  user: User;
   loading: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (userData: RegisterRequest) => Promise<void>;
@@ -29,50 +29,29 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      try {
-        const userData = await apiService.getCurrentUser();
-        setUser(userData);
-      } catch (error) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      }
-    }
-    setLoading(false);
-  };
+  // No authentication - create a default guest user
+  const [user] = useState<User>({
+    id: 'guest',
+    email: 'guest@app.local',
+    username: 'guest',
+    role: 'admin', // Give guest admin access for full functionality
+    createdAt: new Date().toISOString(),
+  });
+  const [loading] = useState(false);
 
   const login = async (credentials: LoginRequest) => {
-    const response = await apiService.login(credentials);
-    localStorage.setItem('accessToken', response.tokens.accessToken);
-    localStorage.setItem('refreshToken', response.tokens.refreshToken);
-    setUser(response.user);
+    // No-op - authentication disabled
+    console.log('Authentication is disabled');
   };
 
   const register = async (userData: RegisterRequest) => {
-    const response = await apiService.register(userData);
-    localStorage.setItem('accessToken', response.tokens.accessToken);
-    localStorage.setItem('refreshToken', response.tokens.refreshToken);
-    setUser(response.user);
+    // No-op - authentication disabled
+    console.log('Authentication is disabled');
   };
 
   const logout = async () => {
-    try {
-      await apiService.logout();
-    } catch (error) {
-      // Ignore logout errors
-    }
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
+    // No-op - authentication disabled
+    console.log('Authentication is disabled');
   };
 
   const value: AuthContextType = {
@@ -81,10 +60,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    isAuditor: user?.role === 'auditor',
-    isOperator: user?.role === 'operator',
+    isAuthenticated: true, // Always authenticated as guest
+    isAdmin: true, // Guest has admin access
+    isAuditor: true, // Guest has auditor access
+    isOperator: true, // Guest has operator access
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
